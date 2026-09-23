@@ -1,0 +1,299 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+const Homequery = `
+query GetPage {
+  page(id: "mission-statement", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+  }
+}
+`;
+
+let missionstatement = await fetchAPI(Homequery);
+const page = missionstatement?.page;
+---
+
+
+    <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="contact-section">
+    <div class="container">
+      <div class="contain-info">
+        
+        <h1 class="fs-50">Your Questions Are Important To Us</h1>
+
+        <p class="subtitle">
+          Questions about your health plan? Need help understanding a document?
+          We're here to help.
+        </p>
+
+        <div class="contact-form">
+          <h2 class="fs-30">Contact us</h2>
+          <p class="note">
+            To contact us, fill in all fields unless marked optional.
+          </p>
+
+          <form id="contactForm">
+
+            <!-- ✅ CF7 Hidden Fields (IMPORTANT FIX) -->
+            <input type="hidden" name="_wpcf7" value="572" />
+            <input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f572-o1" />
+            <input type="hidden" name="_wpcf7_version" value="5.8" />
+
+            <label>First name</label>
+            <input type="text" name="first-name" required  />
+
+            <label>Last name</label>
+            <input type="text" name="last-name" required  />
+
+            <label>Member ID</label>
+            <input type="text" name="member-id"  />
+
+            <label>Date of birth</label>
+         
+            <input type="date" name="dob" />
+
+            <label>Phone number</label>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Enter 10 digit phone number"
+              required
+             
+            
+            />
+
+            <label>Email address</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="example@sample.com"
+              required
+             
+             
+            />
+
+            <p class="checkbox-title">
+              What is your question or comment about?
+            </p>
+
+            <div class="checkbox-group mb-0">
+              <label><input type="checkbox" name="subject[]" value="ID card"  /> ID card</label>
+              <label><input type="checkbox" name="subject[]" value="Enrollment"  /> Enrollment</label>
+              <label><input type="checkbox" name="subject[]" value="Referral requirements"  /> Referral requirements</label>
+              <label><input type="checkbox" name="subject[]" value="Prescription"  /> Prescription drug info</label>
+              <label><input type="checkbox" name="subject[]" value="Coverage"  /> Coverage and benefits</label>
+              <label><input type="checkbox" name="subject[]" value="Claims"  /> Filing claims</label>
+              <label><input type="checkbox" name="subject[]" value="Other"  /> Other</label>
+            </div>
+
+            <label>Tell us how we can help you (optional)</label>
+            <textarea name="message" rows="4"></textarea>
+
+            <button type="submit" id="submitBtn"  style="cursor: pointer;">Send</button>
+
+            <p id="formMessage" style="margin-top:10px;"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCRIPT -->
+<script is:inline>
+  const form = document.getElementById("contactForm");
+  const msg = document.getElementById("formMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch(
+        "https://admin.fivepointsbenefitplans.com/wp-json/contact-form-7/v1/contact-forms/572/feedback",
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      console.log("Response:", data); // 🔍 debug ke liye
+
+      if (data.status === "mail_sent") {
+        msg.innerText = "✅ Message sent successfully!";
+        msg.style.color = "green";
+        form.reset();
+      } else {
+        msg.innerText = data.message || "❌ Failed to send message.";
+        msg.style.color = "red";
+      }
+    } catch (error) {
+      console.error(error);
+      msg.innerText = "⚠️ Something went wrong!";
+      msg.style.color = "orange";
+    }
+  });
+</script>
+<!-- <script is:inline>
+  const form = document.getElementById("contactForm");
+  const msg = document.getElementById("formMessage");
+
+  const emailInput = document.querySelector('input[name="email"]');
+  const submitBtn = document.getElementById("submitBtn");
+
+  let isOtpVerified = false;
+
+  // 🔥 CREATE OTP UI
+  const wrapper = document.createElement("div");
+  wrapper.style.marginTop = "10px";
+
+  wrapper.innerHTML = `
+    <button type="button" id="sendOtpBtn" style="margin-bottom: 10px;     cursor: pointer;">Get OTP</button>
+
+    <div style="margin-top:10px;">
+      <input type="text" id="otpInput" placeholder="Enter OTP" />
+      <button type="button" id="verifyOtpBtn" style="    cursor: pointer;" >Verify OTP</button>
+    </div>
+
+    <p id="otpStatus" style="margin-top:5px;font-size:13px; padding:0px"></p>
+  `;
+
+  // 👉 EMAIL FIELD KE BAAD ADD
+  emailInput.insertAdjacentElement("afterend", wrapper);
+
+  // 👉 AFTER INSERT THEN SELECT
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
+  const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+  const otpInput = document.getElementById("otpInput");
+  const otpStatus = document.getElementById("otpStatus");
+
+  // ✅ SEND OTP
+  sendOtpBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      otpStatus.innerText = "❌ Enter email first";
+      return;
+    }
+
+    otpStatus.innerText = "⏳ Sending OTP...";
+
+    try {
+      const res = await fetch("/api/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+      console.log(data)
+
+      if (data.success) {
+        otpStatus.innerText = "✅ OTP sent to email";
+      } else {
+        otpStatus.innerText = "❌ Failed to send OTP";
+      }
+    } catch {
+      otpStatus.innerText = "⚠️ Server error";
+    }
+  });
+
+  // ✅ VERIFY OTP
+  verifyOtpBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const otp = otpInput.value.trim();
+
+    if (!otp) {
+      otpStatus.innerText = "❌ Enter OTP";
+      return;
+    }
+
+    otpStatus.innerText = "⏳ Verifying...";
+
+    try {
+      const res = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, otp })
+      });
+
+      const data = await res.json();
+      console.log("response",data)
+
+      if (data.success) {
+        otpStatus.innerText = "✅ OTP Verified";
+        isOtpVerified = true;
+        submitBtn.disabled = false;
+      } else {
+        otpStatus.innerText = "❌ Invalid OTP";
+        submitBtn.disabled = true;
+      }
+    } catch {
+      otpStatus.innerText = "⚠️ Server error";
+    }
+  });
+
+  // 🔥 EMAIL CHANGE → RESET
+  emailInput.addEventListener("input", () => {
+    isOtpVerified = false;
+    submitBtn.disabled = true;
+    otpStatus.innerText = "⚠️ Please verify OTP again";
+  });
+
+  // ✅ FORM SUBMIT
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!isOtpVerified) {
+      msg.innerText = "❌ Please verify email first";
+      return;
+    }
+
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch(
+        "https://web.ogrelogicsolutions.com/fivepointsbenefits-astro/wp-json/contact-form-7/v1/contact-forms/572/feedback",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.status === "mail_sent") {
+        msg.innerText = "✅ Message sent successfully!";
+        form.reset();
+        submitBtn.disabled = true;
+        otpStatus.innerText = "";
+      } else {
+        msg.innerText = "❌ Failed to send message.";
+      }
+    } catch {
+      msg.innerText = "⚠️ Something went wrong!";
+    }
+  });
+</script> -->
+
+
+
+
+</BaseLayout>

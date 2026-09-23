@@ -1,0 +1,183 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `query GetPage {
+  page(id: "provider-login", idType: URI) {
+    title
+    content
+    slug
+    uri
+    seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+let portal = await fetchAPI(Homequery);
+const page = portal?.page;
+---
+
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+
+
+    <section
+    class="portal-login"
+  style="background-image: url(/assets/img/main-provider.webp)"
+  >
+    <div class="container">
+      <div class="login-form">
+        <!-- Logo Top -->
+        <div class="main-logo">
+          <img src="/assets/img/logo.png" alt="Points Healthcare" />
+        </div>
+
+        <div class="top-login-content">
+          <!-- Updated Title -->
+          <h1>Secure Provider Log In</h1>
+
+          <div class="save">
+            <a
+              href="https://portal.fivepointsbenefitplans.com/login"
+              target="_blank"
+            >
+              Login to Your Account
+            </a>
+          </div>
+
+          <div class="login-from">
+            <div class="divider"></div>
+
+            <div class="bottom-tiles">
+              <span>Don’t have an account?</span>
+              <p>
+                Activate now to get the <br />
+                most of your policy.
+              </p>
+            </div>
+
+            <div class="activate-btn">
+              <a href="https://portal.fivepointsbenefitplans.com/setup-account" target="_blank">Activate Your Account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="login-section">
+    <div class="top-titles">
+      <span> Five Points Benefit Plans Provider Portal </span>
+    </div>
+
+    <div class="container">
+      <div class="login-from">
+        <!-- Setup -->
+        <div class="login-flow">
+          <div class="content">
+            <h3>Setup Your Account</h3>
+            <p>
+              Enter Your Email Address to Begin Setup.
+              <br />
+              A Verification Code will be Sent to Your Email.
+              <br />
+              Please Check Your Inbox or Spam Folder.
+            </p>
+          </div>
+
+          <div class="save">
+            <a
+              href="https://portal.fivepointsbenefitplans.com/setup-account"
+              target="_blank"
+            >
+              Set Up Your Account
+            </a>
+          </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="login-flow">
+          <div class="content">
+            <h3>Forgot Password</h3>
+            <p>Enter Your Registered Email Address to Reset Your Password.</p>
+          </div>
+
+          <div class="save">
+            <a
+              href=" https://portal.fivepointsbenefitplans.com/forgot-password"
+              target="_blank"
+            >
+              Reset Your Password
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="otheritles">
+        <h2 class="pb-0">Log In to Manage Your Patient’s Health Plan</h2>
+        <!-- <p>
+          Creating a provider account gives you access to your patient’s plan
+          information and other resources.
+        </p> -->
+      </div>
+
+      <!-- Grid -->
+      <!-- <div class="main-grild-portal main-grid-plans">
+        <div class="grid-data">
+          <span>Check Your Benefits & Coverage</span>
+          <img src="/assets/img/g3.png" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>Track Claims</span>
+          <img src="/assets/img/g1.png" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>View EOBs</span>
+          <img src="/assets/img/g3.png" alt="" />
+        </div>
+      </div> -->
+
+      <!-- Image -->
+      <!-- <div class="m-img">
+        <img src="/assets/img/m-img.png" alt="" />
+      </div> -->
+
+      <!-- Content -->
+      <div class="main-img-flow">
+        <div class="account-secuirty">
+          <h3 class="fs-35">Secure Provider Portal Login</h3>
+
+          <p>
+            Five Points Benefit Plans is committed to providing our
+            participating providers with the best tools possible to support
+            their administrative needs. We encourage our participating providers
+            to take advantage of our easy-to-use secure provider portal for fast
+            resolution of routine needs.
+          </p>
+
+          <p>
+            Our secure provider portal allows you to verify member eligibility,
+            view member benefit information, claims, and Explanation of Benefits
+            (EOBs) quickly and easily online.
+          </p>
+
+          <div class="main-listing">
+            <p>The provider portal can be used to:</p>
+          </div>
+
+          <ul class="list-item">
+            <li>Verify member eligibility</li>
+            <li>View claims and claim status</li>
+            <li>View detailed patient lists</li>
+            <li>Update provider demographic information</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,213 @@
+---
+import { getLayoutData, toArray } from "../lib/wordpress";
+import HeaderLink from "./HeaderLink.astro";
+
+/* ================================
+   FETCH DATA (Footer ke saath shared — ek hi API call)
+================================ */
+const data = await getLayoutData();
+
+/* ================================
+   EXTRACT MENU ITEMS (safe)
+================================ */
+const allMenuItems = toArray(data?.menu?.menuItems?.nodes).filter(Boolean);
+
+/* ================================
+   BUILD TREE — O(n) (parentId → children map)
+================================ */
+const childrenMap = new Map();
+for (const item of allMenuItems) {
+  const key = item?.parentId ?? null;
+  if (!childrenMap.has(key)) childrenMap.set(key, []);
+  childrenMap.get(key).push(item);
+}
+
+function buildMenuTree(parentId = null, depth = 0) {
+  if (depth > 10) return []; // circular data se bachav
+  return (childrenMap.get(parentId) ?? []).map((item) => ({
+    id: item?.id,
+    label: item?.label ?? "",
+    uri: item?.uri ?? "#",
+    parentId: item?.parentId ?? null,
+    children: buildMenuTree(item?.id, depth + 1),
+  }));
+}
+
+const menuTree = buildMenuTree();
+
+/* ================================
+   LOGO
+================================ */
+const siteLogo = data?.siteLogo ?? null;
+---
+
+<header class="custom-header">
+  <div class="sticky">
+    <div class="container">
+      <div class="right-value">
+        <ul>
+          <li class="lang">
+            <select id="languageSelect">
+              <option value="">Choose Your Language</option>
+
+              <!-- Global Languages -->
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="zh-CN">Chinese</option>
+              <option value="ko">Korean</option>
+              <option value="ja">Japanese</option>
+              <option value="it">Italian</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+
+              <!-- Indian Languages -->
+              <option value="hi">Hindi</option>
+              <option value="mr">Marathi</option>
+              <option value="ta">Tamil</option>
+              <option value="te">Telugu</option>
+              <option value="bn">Bengali</option>
+            </select>
+          </li>
+        </ul>
+      </div>
+
+      <div class="right-value">
+        <ul>
+          <li>
+            <a
+              href="/member-login"
+              title="Member Login"
+              class="c-btn"
+            >
+              Member Login
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="/provider-login"
+              title="Provider Login"
+              class="c-btn"
+            >
+              Provider Login
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-header">
+    <div class="container">
+      <div class="grid-bottom">
+
+        <!-- LOGO -->
+        <div class="mobile-menu">
+          {
+          siteLogo?.sourceUrl && (
+            <a href="/" class="site-logo" aria-label="Home">
+              <img
+                src={siteLogo.sourceUrl}
+                alt={siteLogo?.altText || "Site Logo"}
+                width="180"
+                height="55"
+                loading="eager"
+              />
+            </a>
+          )
+        }
+
+        <div class="mobile-grid">
+          <div class="main-menu-data">
+            <div class="menu-icon">
+              <img
+                src="/assets/img/menu-btn.png"
+                alt="menu"
+                width="40"
+                height="40"
+              />
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="all-here">
+          <ul class="bottom-navlists zindex">
+            {
+              menuTree?.map((item) => (
+                <li
+                  class={
+                    item?.children?.length > 0
+                      ? "menu-item-has-children"
+                      : ""
+                  }
+                >
+                  <HeaderLink href={item.uri}>
+                    {item.label}
+                  </HeaderLink>
+
+                  {/* LEVEL 2 */}
+                  {item?.children?.length > 0 && (
+                    <ul class="sub-menu">
+                      {item?.children?.map((child) => (
+                        <li
+                          class={
+                            child?.children?.length > 0
+                              ? "menu-item-has-children"
+                              : ""
+                          }
+                        >
+                          <HeaderLink href={child.uri}>
+                            {child.label}
+                          </HeaderLink>
+
+                          {/* LEVEL 3 */}
+                          {child?.children?.length > 0 && (
+                            <ul class="sub-menu">
+                              {child?.children?.map((grandChild) => (
+                                <li
+                                  class={
+                                    grandChild?.children?.length > 0
+                                      ? "menu-item-has-children"
+                                      : ""
+                                  }
+                                >
+                                  <HeaderLink href={grandChild.uri}>
+                                    {grandChild.label}
+                                  </HeaderLink>
+
+                                  {/* LEVEL 4 */}
+                                  {grandChild?.children?.length > 0 && (
+                                    <ul class="sub-menu">
+                                      {grandChild?.children?.map(
+                                        (greatGrandChild) => (
+                                          <li>
+                                            <HeaderLink
+                                              href={greatGrandChild.uri}
+                                            >
+                                              {greatGrandChild.label}
+                                            </HeaderLink>
+                                          </li>
+                                        ),
+                                      )}
+                                    </ul>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mt"></div>

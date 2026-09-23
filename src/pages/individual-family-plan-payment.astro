@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+const Homequery = `query GetPage {
+  page(id: "individual-family-plan-payment", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+let missionstatement = await fetchAPI(Homequery);
+const page = missionstatement?.page;
+---
+
+ <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="mission-statement">
+    <script src="https://js.stripe.com/v3/pricing-table.js"></script>
+    <stripe-pricing-table
+      pricing-table-id="prctbl_1TgrHZKlYfCgZroBbiDyFl9x"
+      publishable-key="pk_live_51RF0HEKlYfCgZroBAEPkoBQ1esWCRrIHHFMK0gfkpnklzAaMYL5DoLanltwLwJy5iqNwXqs27fgYxKpvhsSm7MJW001LedCV6u"
+    >
+    </stripe-pricing-table>
+  </section>
+</BaseLayout>

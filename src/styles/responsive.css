@@ -1,0 +1,1457 @@
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+@media (min-width: 1200px) {
+  ul.bottom-navlists li.menu-item-has-children:hover > .sub-menu {
+    display: block;
+  }
+}
+@media (max-width: 1600px) {
+  .all-here ul li a,
+  .main-tabs p,
+  .main-tabs-flow .list li,
+  .plan-card p {
+    font-size: 15px;
+  }
+  :root {
+    --fs-18: 16px;
+    --fs-30: 25px;
+    --lh-30: 28px;
+    --fs-40: 30px;
+    --lh-50: 40px;
+    --lh-40: 35px;
+    --fs-20: 18px;
+    --fs-60: 50px;
+    --lh-70: 60px;
+    --fs-50: 40px;
+    --lh-60: 50px;
+    --fs-25: 20px;
+    --fs-35: 30px;
+  }
+  .main-logo img {
+    max-width: 100px;
+  }
+  .all-here {
+    gap: 10px;
+    flex-direction: column;
+    row-gap: 0;
+  }
+  .all-here li {
+    padding: 10px 0;
+  }
+  .sticky .container ul li,
+  .sticky .container ul li a,
+  .sticky .container ul li span,
+  .swiper.mySwiper span {
+    font-size: 14px;
+  }
+  .main-grild-portal,
+  .plans-grid,
+  .sticky .container ul {
+    gap: 20px;
+  }
+  .sticky .container ul li::after {
+    right: -10px;
+  }
+  ul.bottom-navlists .sub-menu {
+    width: 260px;
+    padding-top: 5px;
+  }
+  .swiper.mySwiper {
+    bottom: 100px;
+  }
+  .main-image {
+    height: 500px;
+  }
+  .top-section-data {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    height: 220px;
+  }
+  .titles .fs-40 {
+    margin-bottom: 8px;
+  }
+  .bg {
+    padding-top: 100px;
+    padding-left: 100px;
+  }
+  .contact-info .fs-30,
+  .section-tag {
+    margin-bottom: 5px;
+  }
+  .links .c-btn,
+  .section-header,
+  section.contact-us-flow.how-to-enrol .fs-60 {
+    margin-bottom: 30px;
+  }
+  .contact-info-flows,
+  .main-titles-flow,
+  .plan-data {
+    padding: 20px;
+  }
+  .plan-card p {
+    line-height: 25px;
+  }
+  .bottom-data {
+    gap: 80px;
+  }
+  .info-plans .fs-20 {
+    margin: 5px 0;
+  }
+  .icons,
+  .info-plans p,
+  .team-content .main-title {
+    margin-bottom: 10px;
+  }
+  .c-btn {
+    padding: 8px 12px;
+  }
+  .contact-us,
+  .optumax-fe {
+    padding: 50px 0;
+  }
+  .contact-info {
+    margin-left: 100px;
+  }
+  .menu-list h3 {
+    font-size: 18px;
+    padding-bottom: 10px;
+    line-height: 24px;
+  }
+  .allabout-memberss.fin-provide .main-button,
+  .bootm-ligals,
+  .center-titles p,
+  .login .c-btn,
+  .main-about,
+  .main-list-flow,
+  section.pharmacy .univesral-button {
+    margin-top: 20px;
+  }
+  .bootm-ligals.border-0.mt-0.main-bootm,
+  .main-titles-pera,
+  .row-flow-contact {
+    padding-top: 20px;
+  }
+  .mission-statement,
+  .provider-login,
+  footer.custom-footer,
+  section.in-banner,
+  section.participation-participation {
+    padding: 40px 0;
+  }
+  .menu-list.supoortline {
+    padding-left: 15px;
+  }
+  .main-slider {
+    margin-top: -40px;
+  }
+  .bottom-header .all-here ul.bottom-navlists {
+    width: 100%;
+    margin-left: auto;
+  }
+  .mt {
+    margin-top: 146px;
+  }
+  .three-slider {
+    height: 510px;
+  }
+  ul.bottom-navlists .sub-menu li a {
+    font-size: 13px;
+  }
+  .datagridsss p {
+    height: 96px;
+  }
+  .top-header {
+    margin-top: 20px;
+    padding: 10px 20px;
+  }
+  .grid-card h3 {
+    padding-top: 10px;
+    margin-bottom: 0;
+  }
+  section.in-banner .fs-30 {
+    padding-top: 0;
+  }
+  .account-secuirty,
+  .full-titles,
+  p.flow-center {
+    padding-top: 50px;
+  }
+  .btn-list,
+  .tedoc-titles .fs-30,
+  section.in-banner .top-header .fs-30 {
+    padding-top: 15px;
+  }
+  .main-grid-list {
+    padding: 25px;
+  }
+  .optum-rx-welcome,
+  .portal-login,
+  .single-team-mamber {
+    padding: 60px 0;
+  }
+  .contact-info-flow,
+  p.checkbox-title {
+    padding-top: 30px;
+  }
+  .credit-card-flow,
+  .main-titles,
+  section.memberportal-secc {
+    padding: 30px 0;
+  }
+  .contain-info,
+  .main-center-content,
+  .main-titles-rx,
+  section.login-section .login-from,
+  section.memberportal-secc.bg-white.flow {
+    padding-top: 40px;
+  }
+  .allabout-memberss.fin-provide .fs-60,
+  .cancellations-content h2,
+  .contact-form p,
+  .contain-info .fs-50,
+  .grid h3,
+  .main-finder-form h2 {
+    padding-bottom: 10px;
+  }
+  .contact-form,
+  .main-tabs-flow {
+    margin-top: 30px;
+  }
+  .contact-form label,
+  .first-logo,
+  .grid-sytem h3 {
+    margin-top: 10px;
+  }
+  .checkbox-group label {
+    margin-bottom: 12px;
+  }
+  .checkbox-group {
+    margin-bottom: 50px;
+  }
+  .rx-data-img,
+  section.contact-section,
+  section.memberportal-secc.bg-white .holderebg-here {
+    padding-bottom: 30px;
+  }
+  .pharmacy {
+    padding-top: 30px;
+    padding-bottom: 10px;
+  }
+  .ful-details-img,
+  .full-content-data h2,
+  .main-titles-provider .fs-30 {
+    padding-bottom: 20px;
+  }
+  .grid-sytem {
+    padding-top: 15px;
+    gap: 25px;
+  }
+  .pharmacy .headings-flow .fs-40 {
+    max-width: 778px;
+  }
+  .grid-sytem h3 {
+    margin-bottom: 10px;
+  }
+  section.contact-us-flow .icons {
+    margin-bottom: 10px;
+    height: 80px;
+    max-width: 80px;
+  }
+  .bottom-text,
+  .employer-text,
+  .main-list-flow p,
+  .main-titles-provider ul,
+  .online-enrol .fs-30 {
+    margin-bottom: 15px;
+  }
+  .bottom-text {
+    margin-top: 40px;
+  }
+  .ful-details-img {
+    padding-top: 20px;
+  }
+  .imageempoyergroups {
+    margin-bottom: 30px !important;
+  }
+  .logos {
+    gap: 30px;
+  }
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 80px;
+  }
+  .mian-titles .sub-titles {
+    font-size: 20px;
+    line-height: 30px;
+  }
+  .links,
+  .m-img {
+    margin-top: 50px;
+  }
+  .teladoc {
+    padding-top: 80px;
+  }
+  .main-grid-flow {
+    padding-top: 40px;
+    padding-bottom: 30px;
+  }
+  .nav-bar-top ul a {
+    font-size: 16px;
+    padding: 10px;
+  }
+  .center-titles span {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  .save-btn {
+    margin-top: 15px;
+  }
+  .enroll-content .fs-60 {
+    font-size: 50px;
+  }
+  .main-tabs h3 {
+    font-size: 18px;
+  }
+  .main-tabs .c-btn {
+    margin-top: 25px;
+  }
+  .otheritles,
+  .otheritles h2,
+  section.login-section,
+  section.login-section .login-flow {
+    padding-bottom: 50px;
+  }
+  section.memberportal-secc.bg-white {
+    padding-top: 60px;
+  }
+  .logos-flow {
+    margin-top: 5px;
+  }
+  .imgaebg.content .main-imageheree {
+    padding: 20px 0;
+  }
+  .full-content-data {
+    padding: 30px;
+  }
+  .full-content-data .bottom {
+    padding-top: 10px;
+  }
+  section.memberportal-secc.bg-white.flow .main-finder-form {
+    margin-top: 40px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+  .grid {
+    padding: 20px;
+    margin-bottom: 10px;
+  }
+  .btn-list a {
+    padding: 10px 15px;
+  }
+  .butns {
+    padding-top: 20px;
+    gap: 20px;
+  }
+  .butns a {
+    max-width: 370px;
+  }
+  .links-data {
+    padding: 50px 0 30px;
+  }
+  .plans-gridholders {
+    padding-top: 40px !important;
+  }
+  .palnsrows {
+    gap: 30px !important;
+  }
+  .button-plansss.plan {
+    padding-bottom: 0;
+  }
+  .plan-img {
+    height: 300px;
+  }
+}
+@media (max-width: 1400px) {
+  :root {
+    --fs-30: 23px;
+    --lh-40: 32px;
+    --lh-30: 26px;
+    --fs-60: 40px;
+    --lh-70: 50px;
+    --fs-50: 30px;
+    --lh-60: 40px;
+    --fs-40: 25px;
+    --lh-50: 35px;
+  }
+  .contact-form .fs-30,
+  .main-titles-provider ul {
+    margin-bottom: 10px;
+  }
+  .inputfeilds,
+  .logos {
+    padding-top: 15px;
+  }
+  .c-btn,
+  .sticky .container ul li,
+  .sticky .container ul li a,
+  .sticky .container ul li span {
+    font-size: 14px;
+  }
+  .contain-info .subtitle,
+  .menu-list ul li a,
+  .slider-title,
+  section.login-section .login-flow p {
+    font-size: 16px;
+  }
+  .center-titles p,
+  .input-f,
+  .login .c-btn,
+  .main-about,
+  .savebtn input,
+  .top-login-content h1 {
+    margin-top: 10px;
+  }
+  .bottom-header .all-here ul.bottom-navlists {
+    gap: 15px;
+    row-gap: 0;
+  }
+  header.custom-header .c-btn {
+    padding: 5px 10px;
+  }
+  .all-here {
+    gap: 10px;
+  }
+  .contact-info-flow,
+  section.login-section .login-from {
+    padding-top: 20px;
+  }
+  .main-grild-portal,
+  .sticky .container ul {
+    gap: 15px;
+  }
+  .sticky .container ul li::after {
+    right: -7.5px;
+  }
+  ul.bottom-navlists .sub-menu {
+    width: 200px;
+  }
+  .bottom-data {
+    gap: 60px;
+  }
+  .bottom-content .fs-30 {
+    margin: 5px 0;
+  }
+  .contact-us,
+  .find-card,
+  .optum-rx-welcome,
+  .request-apointment,
+  section.enroll {
+    padding: 40px 0;
+  }
+  .contact-info {
+    margin-left: 100px;
+  }
+  .contact-us {
+    background-position: right;
+  }
+  .bg {
+    padding-left: 80px;
+    padding-top: 80px;
+  }
+  .mt {
+    margin-top: 147px;
+  }
+  .bottom-header .all-here ul.bottom-navlists.zindex {
+    max-width: 630px;
+  }
+  .full-content-data p,
+  .main-titles-provider .fs-30,
+  .statement p,
+  section.memberportal-secc.bg-white .holderebg-here {
+    padding-bottom: 10px;
+  }
+  .slider-title {
+    letter-spacing: 1px;
+  }
+  .margin-bottom,
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 60px;
+  }
+  .links .c-btn,
+  section.contact-us-flow.how-to-enrol .fs-60 {
+    margin-bottom: 20px;
+  }
+  .top-section-data {
+    max-width: 400px;
+    height: 220px;
+  }
+  .bootm-strip {
+    padding: 10px 0;
+  }
+  .bottom-sliders {
+    max-width: 310px;
+  }
+  .datagridsss p {
+    height: 107px;
+  }
+  .account-secuirty,
+  .features-listing-flow,
+  .full-titles,
+  .main-center-content,
+  .main-grid-flow,
+  section.memberportal-secc.bg-white.flow {
+    padding-top: 30px;
+  }
+  .account-secuirty ul,
+  .main-grid-list,
+  .main-titles-pera {
+    padding-top: 10px;
+  }
+  .portal-login,
+  .single-team-mamber {
+    padding: 50px 0;
+  }
+  .main-titles {
+    padding: 20px 0;
+  }
+  .mission-statement,
+  .optumax-fe,
+  .provider-login,
+  section.participation-participation {
+    padding: 30px 0;
+  }
+  .contact-form,
+  .enroll-content .c-btn,
+  .main-tabs-flow {
+    margin-top: 20px;
+  }
+  .checkbox-group label input {
+    transform: scale(1.2);
+  }
+  .checkbox-group {
+    margin-bottom: 30px;
+  }
+  .contact-form textarea {
+    height: 100px;
+  }
+  .bottom-text,
+  .full-content-data,
+  .pdf-flow,
+  section.memberportal-secc.bg-white.flow .main-finder-form {
+    margin-top: 30px;
+  }
+  .employer-holderss .fs-40,
+  .full-content-data h2 {
+    padding-bottom: 15px;
+  }
+  .links,
+  .m-img {
+    margin-top: 40px;
+  }
+  .mian-titles .sub-titles {
+    font-size: 18px;
+    line-height: 28px;
+  }
+  .links .c-btn {
+    font-size: 18px;
+  }
+  .teladoc {
+    padding-top: 60px;
+  }
+  .tedoc-titles .fs-30 {
+    padding-top: 10px;
+    padding-bottom: 5px;
+  }
+  .enroll-content .fs-60 {
+    font-size: 30px;
+    line-height: 40px;
+  }
+  .enroll-img {
+    max-width: 500px;
+  }
+  .enroll-flex {
+    gap: 30px;
+  }
+  .login-form,
+  .types {
+    padding: 20px;
+  }
+  .top-login-content p {
+    margin-top: 5px;
+  }
+  .login-type {
+    gap: 20px;
+  }
+  .allabout-memberss.fin-provide .main-button,
+  .bottom-tiles {
+    margin-top: 15px;
+  }
+  section.login-section .login-flow h3 {
+    font-size: 25px;
+    line-height: 35px;
+  }
+  .otheritles {
+    padding-bottom: 30px;
+  }
+  section.login-section .login-flow p br {
+    display: none;
+  }
+  .account-secuirty .fs-35 {
+    margin-bottom: 0;
+  }
+  .links-data,
+  section.member-sec.provider .fs-60 {
+    padding-bottom: 0;
+  }
+  p.flow-center,
+  section.memberportal-secc.bg-white {
+    padding-top: 40px;
+  }
+  .imgaebg.content .main-imageheree {
+    padding: 0;
+  }
+  .main-logo {
+    margin: 0;
+  }
+}
+@media (max-width: 1200px) {
+  .all-here,
+  .mobile-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+  .grid-bottom {
+    flex-direction: column;
+  }
+  .mobile-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .all-here {
+    display: none;
+    padding-top: 15px;
+    overflow-y: auto;
+  }
+  .bottom-header .all-here ul.bottom-navlists {
+    display: block;
+    padding-bottom: 40px;
+  }
+  .all-here li,
+  .bootm-ligals,
+  .sticky {
+    padding: 5px 0;
+  }
+  .links .c-btn {
+    margin-bottom: 15px;
+  }
+  .all-here .sub-menu li::after,
+  .menu-icon {
+    display: block;
+  }
+  .menu-icon img {
+    max-width: 30px;
+  }
+  ul.bottom-navlists .sub-menu {
+    position: static;
+    box-shadow: none;
+    display: none;
+  }
+  li.menu-item-has-children::after {
+    width: 15px;
+    height: 15px;
+    left: auto;
+    transform: rotate(45deg);
+    top: 8px;
+    border: 2px solid #028253;
+    background-color: transparent;
+    border-top: none;
+    border-left: none;
+    right: 4px;
+    opacity: 1;
+  }
+  ul.bottom-navlists li:hover .sub-menu {
+    padding-top: 0;
+    padding-bottom: 0;
+    display: none;
+  }
+  .top-section-data {
+    margin-left: 0;
+  }
+  .swiper.mySwiper {
+    width: 85%;
+    bottom: 40px;
+  }
+  .find-card,
+  .health-plans,
+  .optum-rx-welcome,
+  .request-apointment,
+  footer.custom-footer,
+  section.enroll,
+  section.finalcare-sec,
+  section.memberportal-secc {
+    padding: 30px 0;
+  }
+  .plans-grid {
+    gap: 15px;
+  }
+  .section-header {
+    margin-bottom: 20px;
+  }
+  .plan-card p {
+    line-height: 24px;
+    min-height: 150px;
+  }
+  .info-plans .fs-20 {
+    font-size: 18px;
+  }
+  .portal-login,
+  .single-team-mamber,
+  section.plan-details {
+    padding: 40px 0;
+  }
+  .contact-info {
+    margin-left: 50px;
+  }
+  .bootm-ligals.border-0.mt-0.main-bootm,
+  .main-center-content {
+    padding-top: 10px;
+  }
+  .menu-list-all {
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .menu-list.supoortline {
+    border: none;
+    padding-left: 0;
+  }
+  .bg {
+    padding-left: 50px;
+    padding-top: 70px;
+  }
+  .request-quote {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-top: 5px;
+    display: none;
+  }
+  .main-logo .c-btn,
+  header.custom-header .c-btn,
+  section.request-apointment .section-tag::after,
+  ul.bottom-navlists
+    li.menu-item-has-children
+    .sub-menu
+    li.menu-item-has-children:hover
+    .sub-menu {
+    display: none;
+  }
+  .bootm-strip,
+  .grid-bottom {
+    padding: 10px 0;
+  }
+  .otheritles,
+  section.login-section {
+    padding-bottom: 30px;
+  }
+  .mobile-grid {
+    padding-top: 0;
+  }
+  .mobile-grid .main-menu-data {
+    display: flex;
+    gap: 25px;
+  }
+  ul.bottom-navlists .sub-menu,
+  ul.bottom-navlists
+    li.menu-item-has-children
+    .sub-menu
+    li.menu-item-has-children
+    .sub-menu {
+    width: 100%;
+  }
+  footer.custom-footer ul.sub-menu {
+    display: block !important;
+  }
+  .bottomsldider-here {
+    max-width: 960px;
+  }
+  .mt {
+    margin-top: 100px;
+  }
+  .sticky .container ul li {
+    border: none;
+    padding: 0;
+  }
+  .bootm-strip span {
+    font-size: 20px;
+  }
+  .margin-bottom {
+    margin-bottom: 64px;
+  }
+  .bottom-data {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  .top-section-data {
+    bottom: 40px;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 235px;
+    max-width: 325px;
+  }
+  .datagridsss p {
+    height: 90px;
+  }
+  .bottom-header .all-here ul.bottom-navlists.zindex {
+    padding-bottom: 0;
+    max-width: 100%;
+  }
+  .bottom-header .all-here ul.bottom-navlists.flow {
+    padding-bottom: 0;
+  }
+  .grid-bottom {
+    gap: 0;
+  }
+  .team-content a {
+    margin-top: 15px;
+  }
+  .finalcare-image {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .grid-btnssss {
+    padding: 20px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  section.contact-us-flow.how-to-enrol .fs-60 {
+    margin-bottom: 10px;
+  }
+  .bottom-text,
+  .footer-titles p {
+    margin-top: 25px;
+  }
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 50px;
+  }
+  .links,
+  .m-img {
+    margin-top: 30px;
+  }
+  .links p,
+  .mian-titles .sub-titles {
+    font-size: 16px;
+    line-height: 25px;
+  }
+  .features-listing-flow {
+    padding-top: 20px;
+  }
+  .features-listing p,
+  .features-listing ul li {
+    padding-bottom: 10px;
+  }
+  .teladoc {
+    padding-top: 50px;
+  }
+  .otheritles h2,
+  section.login-section .login-flow {
+    padding-bottom: 40px;
+  }
+  p.flow-center,
+  section.memberportal-secc.bg-white {
+    padding-top: 30px;
+  }
+  .full-content-data .bottom {
+    padding-top: 5px;
+  }
+  .links-data {
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+  }
+  .plans-gridholders {
+    gap: 30px !important;
+  }
+}
+@media (max-width: 995px) {
+  .sticky .container {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .otheritles h2,
+  section.login-section .login-flow {
+    padding-bottom: 30px;
+  }
+  .left-value,
+  .right-value,
+  .sticky .container ul {
+    max-width: 100%;
+    width: 100%;
+  }
+  .grid-sytem,
+  .plans-grid,
+  .sticky .container ul {
+    flex-wrap: wrap;
+  }
+  .plan-card {
+    max-width: 300px;
+  }
+  .allabout-memberss,
+  .bottom-content,
+  .bottom-img,
+  .contact-info-flow-data,
+  .enroll-img,
+  .finalcare-details,
+  .main-conent .team-img,
+  .team-content,
+  section.login-section .login-flow {
+    max-width: 100%;
+  }
+  .plan-card h3 {
+    margin-bottom: 10px;
+  }
+  .links .c-btn,
+  .main-titles-provider p,
+  .main-titles-provider ul li {
+    font-size: 16px;
+  }
+  .full-content-data,
+  .imageempoyergroups.w-100 span,
+  .plan-data {
+    padding: 15px;
+  }
+  .bottom-data,
+  .enroll-flex {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .contact-info-flow-data br,
+  section.request-apointment .section-tag::after {
+    display: none;
+  }
+  .bottom-img {
+    margin-right: auto;
+  }
+  .portal-login,
+  .single-team-mamber,
+  section.plan-details {
+    padding: 30px 0;
+  }
+  .ful-details-img,
+  .plain-type-info {
+    gap: 20px;
+  }
+  .menu-list-all {
+    justify-content: start;
+  }
+  .menu-list.supoortline {
+    padding: 0;
+    border: none;
+  }
+  .menu-list h3 {
+    padding-bottom: 8px;
+  }
+  .bootm-ligals,
+  .contact-info-flows,
+  .min-btn {
+    margin-top: 15px;
+  }
+  .full-data p {
+    line-height: 22px;
+  }
+  .bootm-ligals ul {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .bootm-ligals ul li,
+  .bootm-ligals ul li a {
+    line-height: normal;
+  }
+  .bg {
+    padding-left: 10px;
+    padding-top: 50px;
+  }
+  .sign-in .c-btn {
+    max-width: 225px;
+  }
+  .top-section-data {
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 295px;
+    max-width: 271px;
+  }
+  .datagridsss p {
+    height: 110px;
+  }
+  .mt {
+    margin-top: 128px;
+  }
+  .main-grid-list a {
+    max-width: 308px;
+  }
+  .ful-details-img p,
+  .full-titles {
+    padding-top: 0;
+  }
+  .top-header .fs-80 {
+    letter-spacing: 15px;
+  }
+  .main-conent {
+    gap: 15px;
+    flex-direction: column-reverse;
+  }
+  .contact-info-flow-data.contact-from a,
+  .team-content a {
+    margin-top: 10px;
+  }
+  .contact-info-flow h3,
+  .grid-one h3,
+  .links-data h3,
+  .main-titels p,
+  .rx-data-img {
+    padding-bottom: 10px;
+  }
+  .grid-sytem h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .grid-ph {
+    max-width: 245px;
+  }
+  section.pharmacy .univesral-button {
+    margin-top: 25px;
+  }
+  .row-flow-contact {
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 10px;
+  }
+  .ful-details-img {
+    padding-top: 0;
+    flex-direction: column;
+  }
+  .ful-details-img .full-content,
+  .full-img {
+    width: 100%;
+  }
+  .main-titels,
+  p.flow-center {
+    padding-top: 20px;
+  }
+  .imageempoyergroups {
+    margin-bottom: 20px !important;
+  }
+  .logos {
+    gap: 10px;
+    padding-bottom: 30px;
+  }
+  .main-titles-flow {
+    padding: 15px;
+    margin: 12px 0;
+  }
+  section.employermain-sec.section-padding.pb-0 .full-content .fs-25 {
+    padding-bottom: 15px;
+  }
+  .allabout-memberss.flow {
+    width: 100%;
+    max-width: 100%;
+  }
+  .main-titles-rx {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rx-data-img .img {
+    max-width: 80px;
+  }
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 40px;
+  }
+  .teladoc {
+    padding-bottom: 30px;
+    padding-top: 20px;
+  }
+  .grid-one {
+    width: fit-content;
+    margin: 0 auto;
+  }
+  .allabout-memberss {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .ph-content,
+  section.contact-us-flow .icons {
+    height: auto;
+  }
+  section.login-section .login-from {
+    gap: 0;
+    flex-direction: column;
+  }
+  section.member-sec.provider.data-flow.flow-data
+    .allabout-memberss.fin-provide {
+    margin-top: 0;
+  }
+  .find-card {
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .palnsrows {
+    gap: 20px !important;
+  }
+  .links-data {
+    gap: 20px;
+    padding-top: 20px;
+  }
+  .butns {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .main-text {
+    padding: 20px;
+  }
+  .grid-sytem {
+    justify-content: center;
+  }
+}
+@media (max-width: 768px) {
+  .features-listing,
+  .slider-js {
+    width: 100%;
+  }
+  .plain-type-info {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .info-plans p {
+    height: auto;
+  }
+  .info-plans .fs-20 {
+    line-height: normal;
+  }
+  .info-plans {
+    max-width: 300px;
+  }
+  .contact-info {
+    margin-left: 0;
+    padding: 30px;
+  }
+  .bottomsldider-here {
+    display: none;
+  }
+  .top-section-data {
+    margin-left: 0;
+    top: initial;
+    bottom: 44px;
+    left: 20px;
+    padding: 20px;
+    transform: none;
+  }
+  .top-section-data .titles {
+    padding-bottom: 20px;
+  }
+  .sign-in .c-btn {
+    max-width: 250px;
+  }
+  .menu-list-all {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .three-slider {
+    flex-direction: column;
+    gap: 0;
+    height: auto;
+  }
+  .slider-js {
+    height: 500px;
+  }
+  .datagridsss p {
+    height: 135px;
+  }
+  .main-grid-list a {
+    max-width: 90%;
+  }
+  .contain-info {
+    padding-top: 30px;
+  }
+  .contact-form,
+  .footer-titles p,
+  .main-tabs-flow {
+    margin-top: 10px;
+  }
+  .contact-form p,
+  .min-btn a {
+    font-size: 16px;
+  }
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 30px;
+  }
+  .links {
+    margin-top: 20px;
+  }
+  .features-listing-flow {
+    flex-direction: column;
+  }
+  .features-listing h3 {
+    padding-bottom: 10px;
+  }
+  .features-listing p,
+  .features-listing ul li {
+    padding-left: 0;
+  }
+  .main-tabs {
+    padding: 30px 15px;
+  }
+  .main-tabs-flow .list li {
+    padding-right: 15px;
+  }
+  .otheritles h2,
+  .top-titles span {
+    font-size: 30px;
+    line-height: 40px;
+  }
+  .grid-data img {
+    max-width: 100px;
+  }
+  p.flow-center {
+    padding-top: 15px;
+  }
+  .plan-img {
+    height: 200px;
+  }
+  .plan-card h3 {
+    height: 50px;
+  }
+}
+@media (max-width: 575px) {
+  .bootm-strip span,
+  .rx-data-img h3 {
+    padding-bottom: 10px;
+  }
+  .left-value {
+    display: none;
+  }
+  .plan-card h3 {
+    height: auto;
+    margin-bottom: 10px;
+  }
+  .features-listing-flow {
+    padding-top: 10px;
+  }
+  .features-listing p,
+  .features-listing ul li,
+  .rx-data-img ul li {
+    font-size: 16px;
+  }
+  .form-fileds .form-fields,
+  .form-fileds .form-fields::-webkit-input-placeholder,
+  .form-fileds label,
+  p,
+  ul li {
+    font-size: 16px !important;
+    line-height: 25px !important;
+  }
+  .center-titles span,
+  .plan-data .c-btn,
+  .top-login-content span {
+    margin-top: 5px;
+  }
+  .contact-info {
+    max-width: 100%;
+    padding: 15px;
+  }
+  .bootm-ligals.border-0.mt-0.main-bootm .container {
+    flex-wrap: wrap;
+    gap: 15px;
+    flex-direction: column;
+  }
+  .bootm-ligals.border-0.mt-0.main-bootm ul {
+    max-width: 100%;
+    width: 100%;
+  }
+  .bootm-ligals.border-0.mt-0.main-bootm .container a {
+    width: fit-content;
+    margin-right: auto;
+  }
+  section.login-section .login-flow h3 {
+    font-size: 18px;
+    line-height: 28px;
+  }
+  section.login-section .login-flow p {
+    font-size: 14px !important;
+    line-height: 26px;
+  }
+  .account-secuirty .fs-35,
+  .grid-data span,
+  .grid-one h3,
+  .main-center-content .fs-25 {
+    font-size: 18px;
+  }
+  .grid-data {
+    padding: 20px;
+  }
+  a.logo {
+    order: -1;
+  }
+  .bootm-strip {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .margin-bottom {
+    margin-bottom: 107px;
+  }
+  .bootm-strip a {
+    width: fit-content;
+    margin: 0 auto;
+  }
+  .top-section-data {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 95%;
+    max-width: 100%;
+    margin: 0;
+    right: 0;
+    left: 10px;
+  }
+  .bg,
+  .contact-info-flow {
+    padding-left: 0;
+  }
+  .sticky .container ul li.email span {
+    white-space: nowrap;
+    width: 155px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: normal;
+    margin-top: 7px;
+  }
+  .c-btn {
+    padding: 8px 15px !important;
+    font-size: 13px;
+  }
+  .datagridsss,
+  .main-titles-rx {
+    padding-top: 20px;
+  }
+  li.menu-item-has-children::after {
+    width: 10px;
+    height: 10px;
+  }
+  .bootm-strip span {
+    max-width: 100%;
+    width: 100%;
+    border-bottom: 1px solid #000;
+  }
+  .datagridsss {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .datagridsss p {
+    height: auto;
+  }
+  .team-content .main-title {
+    margin-bottom: 5px;
+  }
+  .grid-ph {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .grid-sytem {
+    gap: 15px;
+  }
+  .finalcare-details a.width {
+    display: inline-block;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .email-flow-ok {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .inputfeilds,
+  .main-tabs-flow {
+    flex-direction: column;
+  }
+  .optum-rx-welcome .fs-60 {
+    margin-bottom: 10px;
+  }
+  .main-titles-provider ul {
+    margin-left: 20px;
+  }
+  .inputfeilds {
+    gap: 10px;
+    padding-top: 0;
+  }
+  .inputfeilds .input {
+    max-width: 100%;
+  }
+  .save-btn {
+    margin-top: 0;
+  }
+  section.member-sec.provider .fs-60 {
+    font-size: 30px;
+    margin-bottom: 5px;
+  }
+  .forgat,
+  .nav-bar-top ul a,
+  .top-login-content p {
+    font-size: 14px;
+  }
+  .enroll-content .fs-60 {
+    font-size: 25px;
+    line-height: 35px;
+  }
+  .main-tabs-flow .list {
+    width: 100%;
+    max-width: 100%;
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
+  .input-f input {
+    padding: 10px 15px;
+  }
+  .types img {
+    max-width: 50px;
+  }
+  .login-type {
+    gap: 10px;
+    flex-direction: column;
+  }
+  .otheritles h2,
+  .top-titles span {
+    font-size: 20px;
+    line-height: 30px;
+  }
+  .otheritles h2,
+  .top-titles span,
+  section.login-section .login-flow {
+    padding-bottom: 15px;
+  }
+  .account-secuirty p,
+  .account-secuirty ul li {
+    font-size: 15px !important;
+    line-height: 26px;
+  }
+  section.memberportal-secc.bg-white {
+    padding-bottom: 20px;
+  }
+  .btn-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .imageempoyergroups.w-100 span {
+    font-size: 20px;
+  }
+}

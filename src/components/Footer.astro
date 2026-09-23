@@ -1,0 +1,226 @@
+---
+import { getLayoutData, toArray } from "../lib/wordpress";
+import Googlereview from "./Googlereview.astro";
+
+/* Header ke saath shared data — koi extra API call nahi */
+const data = await getLayoutData();
+const items = toArray(data?.menu?.menuItems?.nodes).filter(Boolean);
+const footerWidget = data?.mainSidebar ?? "";
+
+/* parentId → children map (O(n) lookup) */
+const childrenMap = new Map();
+for (const item of items) {
+  const key = item?.parentId ?? null;
+  if (!childrenMap.has(key)) childrenMap.set(key, []);
+  childrenMap.get(key).push(item);
+}
+
+/* children finder */
+const getChildren = (parentId) =>
+  parentId ? childrenMap.get(parentId) ?? [] : [];
+
+/* menu finder */
+const getItem = (name) =>
+  items.find((i) => (i?.label ?? "").toLowerCase() === name.toLowerCase());
+
+/* recursive html generator */
+function renderMenu(parentId, depth = 0) {
+  if (!parentId || depth > 10) return "";
+
+  let html = "";
+
+  for (const item of getChildren(parentId)) {
+    html += `<li>
+      <a href="${item?.uri ?? "#"}">${item?.label ?? ""}</a>`;
+
+    const sub = getChildren(item?.id);
+
+    if (sub.length > 0) {
+      html += `<ul class="sub-menu">`;
+      html += renderMenu(item.id, depth + 1);
+      html += `</ul>`;
+    }
+
+    html += `</li>`;
+  }
+
+  return html;
+}
+
+const home = getItem("Home");
+const members = getItem("Members");
+const employers = getItem("Employers");
+const college = getItem("College Students");
+const family = getItem("Individuals & Families");
+const provider = getItem("Find a Provider");
+const pharmacy = getItem("Pharmacy and Rx");
+const tele = getItem("Telemedicine");
+---
+
+<!-- Google review  -->
+<Googlereview/>
+<footer class="custom-footer">
+  <div class="container">
+    <div class="menu-list-all">
+      <!-- ABOUT -->
+      <div class="menu-list">
+        <h3>About Us</h3>
+        <ul class="sub-menu" set:html={renderMenu(home?.id)} />
+      </div>
+
+      <!-- MEMBERS -->
+      <div class="menu-list">
+        <h3>Members</h3>
+        <ul class="sub-menu" set:html={renderMenu(members?.id)} />
+      </div>
+
+      <!-- EMPLOYERS -->
+      <div class="menu-list">
+        <h3>Employers</h3>
+        <ul class="sub-menu" set:html={renderMenu(employers?.id)} />
+      </div>
+
+      <!-- COLLEGE + FAMILY -->
+      <!-- <div class="menu-list">
+        <h3>College Students</h3>
+        <ul class="sub-menu" set:html={renderMenu(college?.id)} />
+
+        <h3>Individuals & Families</h3>
+        <ul class="sub-menu" set:html={renderMenu(family?.id)} />
+      </div> -->
+
+      <!-- PROVIDERS -->
+      <div class="menu-list supoortline">
+        <h3>Find A Provider</h3>
+        <ul class="sub-menu" set:html={renderMenu(provider?.id)} />
+
+        <h3>Pharmacy And Rx</h3>
+        <ul class="sub-menu" set:html={renderMenu(pharmacy?.id)} />
+
+        <h3>Telemedicine</h3>
+        <ul class="sub-menu" set:html={renderMenu(tele?.id)} />
+      </div>
+    </div>
+  </div>
+  <div set:html={footerWidget}></div>
+  
+</footer>
+<div class="margin-bottom"></div>
+<div class="bootm-strip">
+    <span>Ready to Choose Your Plan? </span>
+    <a href="tel:915.803.4198">915.803.4198</a>
+  </div>
+
+<div id="google_translate_element" style="display:none;"></div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      is:inline></script>
+
+     
+<script  is:inline>
+  let googleTranslateLoaded = false;
+
+  function loadGoogleTranslate() {
+    if (googleTranslateLoaded) return;
+
+    const script = document.createElement("script");
+    script.src =
+      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    document.body.appendChild(script);
+
+    googleTranslateLoaded = true;
+  }
+
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {
+        pageLanguage: "en",
+        includedLanguages: "en,es,zh-CN,ko,ja,it,fr,de,hi,mr,ta,te,bn,",
+      },
+      "google_translate_element"
+    );
+
+    applySavedLanguage();
+  }
+
+  function applySavedLanguage() {
+    const savedLang = localStorage.getItem("lang");
+    const interval = setInterval(() => {
+      const dropdown = document.querySelector(".goog-te-combo");
+
+      if (dropdown && savedLang) {
+        dropdown.value = savedLang;
+        dropdown.dispatchEvent(new Event("change"));
+        clearInterval(interval);
+      }
+    }, 500);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const langSelect = document.getElementById("languageSelect");
+
+    if (!langSelect) return;
+
+    // Load script only when user interacts
+    langSelect.addEventListener("focus", loadGoogleTranslate);
+
+    langSelect.addEventListener("change", function () {
+      const lang = this.value;
+      localStorage.setItem("lang", lang);
+
+      const dropdown = document.querySelector(".goog-te-combo");
+
+      if (dropdown) {
+        dropdown.value = lang;
+        dropdown.dispatchEvent(new Event("change"));
+      }
+    });
+  });
+
+
+// $(document).ready(function () {
+//   // Menu toggle
+//   $(".menu-icon").on("click", function () {
+//       $(".all-here").slideToggle();
+//   });
+
+//   // Mobile menu
+//   if ($(window).innerWidth() <= 1200) {
+
+//       $(".sub-menu").hide();
+
+//       $(".menu-item-has-children").on("click", function (e) {
+//           e.stopPropagation();
+//           $(this).children(".sub-menu").slideToggle();
+//       });
+
+//       // prevent default inside submenu
+//       // $(".sub-menu").on("click", function (e) {
+//       //     // e.preventDefault();
+//       //     // e.stopPropagation();
+//       // });
+//   }
+// });
+
+$(document).ready(function () {
+  $(".menu-icon").on("click", function () {
+    $(".all-here").slideToggle();
+  });
+
+  if ($(window).innerWidth() <= 1200) {
+    $(".sub-menu").hide();
+
+    $(".menu-item-has-children").on("click", function (e) {
+      // 🔥 agar click anchor pe hua hai → kuch mat karo
+      if ($(e.target).is("a")) return;
+
+      $(this).children(".sub-menu").slideToggle();
+    });
+  }
+});
+</script>
+
+
+
+

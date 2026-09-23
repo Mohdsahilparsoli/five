@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Howtoenrol = `
+query GetPage {
+  page(id: "how-to-enrol-individuals-and-families", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+       familiesImage { 
+      familyImg {
+        # Inside the repeater, check if your image needs a 'node'
+        familyImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          file
+          filePath
+          height
+          width
+        }
+      }
+    }
+  }
+}
+`;
+
+let familyenrol = await fetchAPI(Howtoenrol);
+const page = familyenrol?.page;
+---
+
+   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="employermain-sec section-padding pb-0">
+    <div class="container">
+      <div class="employer-holderss">
+        <div class="imageempoyergroups">
+          {page?.featuredImage?.node?.sourceUrl && (
+          <img
+            src={page?.featuredImage?.node?.sourceUrl}
+            width={page?.featuredImage?.node?.mediaDetails?.width}
+            height={page?.featuredImage?.node?.mediaDetails?.height}
+            alt={page?.title}
+          />
+          )}
+        </div>
+        <div set:html={page?.content ?? ""} />
+      </div>
+      <div class="employer-holderss">
+        <div class="logos">
+          {
+            toArray(page?.familiesImage?.familyImg).map((item) => (
+              <div class="main-img">
+                {item?.familyImage?.node?.sourceUrl && (
+                <img
+                  src={item?.familyImage?.node?.sourceUrl}
+                  alt={item?.familyImage?.node?.altText || "family image"}
+                />
+                )}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

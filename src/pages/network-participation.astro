@@ -1,0 +1,174 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Homequery = `query GetPage {
+  page(id: "network-participation", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+let missionstatement = await fetchAPI(Homequery);
+const page = missionstatement?.page;
+---
+
+   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="mission-statement">
+    <div class="container">
+      <div class="statement">
+        <div class="main-titles">
+          <h1 class="fs-60">{page?.title}</h1>
+        </div>
+        <div
+          class="main-titles-pera"
+          set:html={page?.content ?? ""}
+        />
+      </div>
+    </div>
+
+
+
+
+  </section>
+</BaseLayout>
+
+<style>
+  /* RESET */
+.main-titles .fs-60{
+  margin-bottom: 0px;
+}
+
+/* SECTION BACKGROUND */
+.mission-statement {
+  padding: 30px 0px;
+
+}
+
+/* CONTAINER */
+.mission-statement .container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* MAIN BOX */
+.statement {
+  background: #ffffff;
+  border-radius: 14px;
+
+}
+
+/* HEADING */
+.main-titles h1 {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a2b49;
+  margin-bottom: 20px;
+}
+
+/* PARAGRAPH */
+.main-titles-pera p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* LINKS */
+.main-titles-pera a {
+  display: inline-block;
+  color: #0d6efd;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.main-titles-pera a:hover {
+  color: #084298;
+  text-decoration: underline;
+}
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a2b49;
+  margin: 30px 0 15px;
+}
+
+/* CARD */
+.card {
+  background: #f1f5ff;
+  padding: 20px 25px;
+  border-radius: 10px;
+  border-left: 5px solid #0d6efd;
+  margin-bottom: 20px;
+}
+
+/* LIST */
+.card ul {
+  list-style: none;
+}
+
+.card ul li {
+  padding: 8px 0;
+  font-size: 15px;
+  color: #333;
+  position: relative;
+  padding-left: 22px;
+}
+
+/* CUSTOM BULLET */
+.card ul li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  color: #0d6efd;
+  font-size: 14px;
+}
+
+/* HIGHLIGHT */
+.highlight {
+  color: #d63384;
+  font-weight: 700;
+}
+
+/* FOOTER LINK BUTTON STYLE */
+.footer-link {
+  display: inline-block;
+  background: #0d6efd;
+  color: #fff !important;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.footer-link:hover {
+  background: #084298;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+
+  .main-titles h1 {
+    font-size: 28px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+}
+</style>

@@ -1,0 +1,306 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `
+
+query GetPage {
+  page(id: "individuals-families", idType: URI) {
+    title
+    
+    content
+    slug
+    uri
+ seo {
+      title
+      fullHead
+    }
+    familyPlans {
+      fivePointLetter
+      familyPlan {
+        title
+        backgroundColor
+        fieldGroupName
+        sobPlan
+        paymentLink {
+          target
+          title
+          url
+        }
+ sbcPlan
+      
+      }
+
+      sixtyFortyPlan {
+        title
+        backgroundColor
+        sbcPlan
+        paymentLink {
+          target
+          title
+          url
+        }
+        sobPlan
+
+      }
+
+      eightyTwentyPlan {
+        title
+        backgroundColor
+        sbcPlan
+        sobPlan
+ paymentLink {
+          target
+          title
+          url
+        }
+    
+      }
+    }
+
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          height
+          width
+        }
+      }
+    }
+  }
+}
+  
+`;
+
+let plan = await fetchAPI(Homequery);
+const page = plan?.page;
+---
+
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="employermain-sec section-padding">
+    <div class="container">
+      <div class="employer-holderss">
+        <div class="imageempoyergroups">
+          {page?.featuredImage?.node?.sourceUrl && (
+          <img
+            src={page?.featuredImage?.node?.sourceUrl}
+            alt={page?.title}
+            width={page?.featuredImage?.node?.mediaDetails?.width}
+            height={page?.featuredImage?.node?.mediaDetails?.height}
+          />
+          )}
+        </div>
+        <h1 class="fs-40">{page?.title}</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="shoupourplans-sec section-padding">
+    <div class="container">
+      <div class="plans-holderss">
+        <div
+          class="shopaboutgriops pt-0 max-width"
+          set:html={page?.content ?? ""}
+        />
+
+        <div class="plans-gridholders">
+          <div class="row palnsrows justify-content-center">
+            {
+              toArray(page?.familyPlans?.familyPlan).map((plan) => (
+                <div class="col-md-6 col-lg-4">
+                  <div class="holders-planssss">
+                    <h4 class="fs-20">{plan?.title}</h4>
+
+                    <div class="image-holderssplanss">
+                      <div
+                        class="allchild-holders"
+                        style={`background: ${plan?.backgroundColor ?? ""}`}
+                      >
+                        <div class="image-dtaaplans">
+                          <img
+                            src="/assets/img/logoplans.png"
+                            width="350"
+                            height="160"
+                            loading="lazy"
+                          />
+                        </div>
+
+                        <div class="allplans-detailsss">
+                          <p>
+                            Individual and Family Plan <br /> U.S. ONLY
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="button-plansss">
+                      <div class="grid-butttonsplans">
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sobPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            Medical Benefit Summary
+                          </a>
+                        </div>
+
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sbcPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            U.S. Only Plan SBC
+                          </a>
+                        </div>
+                        <a href={plan?.paymentLink?.url} class="c-btn">
+                          Enroll Now
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="row palnsrows justify-content-center">
+            <div class="col-12">
+              <div class="textplans-mainsss">
+                <h4 class="fs-40">60/40 PLANS</h4>
+              </div>
+            </div>
+            {
+              toArray(page?.familyPlans?.sixtyFortyPlan).map((plan) => (
+                <div class="col-md-6 col-lg-4">
+                  <div class="holders-planssss">
+                    <h4 class="fs-20">{plan?.title}</h4>
+
+                    <div class="image-holderssplanss">
+                      <div
+                        class="allchild-holders"
+                        style={`background: ${plan?.backgroundColor ?? ""}`}
+                      >
+                        <div class="image-dtaaplans">
+                          <img
+                            src="/assets/img/logoplans.png"
+                            width="350"
+                            height="160"
+                            loading="lazy"
+                          />
+                        </div>
+
+                        <div class="allplans-detailsss">
+                          <p>Individual and Family Plan</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="button-plansss">
+                      <div class="grid-butttonsplans">
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sobPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            Medical Benefit Summary
+                          </a>
+                        </div>
+
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sbcPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            {plan?.title?.replace(/^Allegra Association\s*/, "")}{" "}
+                            SBC
+                          </a>
+                        </div>
+                        <a href={plan?.paymentLink?.url} class="c-btn">
+                          Enroll Now
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          <div class="row palnsrows justify-content-center">
+            <div class="col-12">
+              <div class="textplans-mainsss">
+                <h4 class="fs-40">80/20 PLANS</h4>
+              </div>
+            </div>
+            {
+              toArray(page?.familyPlans?.eightyTwentyPlan).map((plan) => (
+                <div class="col-md-6 col-lg-4">
+                  <div class="holders-planssss">
+                    <h4 class="fs-20">{plan?.title}</h4>
+
+                    <div class="image-holderssplanss">
+                      <div
+                        class="allchild-holders"
+                        style={`background: ${plan?.backgroundColor ?? ""}`}
+                      >
+                        <div class="image-dtaaplans">
+                          <img
+                            src="/assets/img/logoplans.png"
+                            width="350"
+                            height="160"
+                            loading="lazy"
+                          />
+                        </div>
+
+                        <div class="allplans-detailsss">
+                          <p>Individual and Family Plan</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="button-plansss">
+                      <div class="grid-butttonsplans">
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sobPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            {" "}
+                            Medical Benefit Summary
+                          </a>
+                        </div>
+
+                        <div class="universal-newbutton">
+                          <a
+                            href={plan?.sbcPlan}
+                            target="_blank"
+                            class="newbutton-universal"
+                          >
+                            {/* {plan?.title?.split(' ').slice(1).join(' ')} Plan SBC */}
+                            {plan?.title?.replace(/^Allegra Association\s*/, "")}{" "}
+                            SBC
+                          </a>
+                        </div>
+                        <a href={plan?.paymentLink?.url} class="c-btn">
+                          Enroll Now
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+          <div set:html={page?.familyPlans?.fivePointLetter ?? ""} />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

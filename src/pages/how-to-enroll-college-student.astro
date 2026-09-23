@@ -1,0 +1,131 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const query = `query GetPage {
+  page(id: "how-to-enroll-college-student", idType: URI) {
+    title
+    content
+
+    featuredImage {
+      node {
+        sourceUrl
+        altText
+      }
+    }
+
+    howToEnrollCollegeStudent {
+      mainTitle
+
+      steps {
+        stepContent
+        stepPictures {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+
+      fullContactInformation
+      fivePointLetter
+    }
+
+    seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+const res = await fetchAPI(query);
+const page = res?.page;
+const acf = page?.howToEnrollCollegeStudent;
+---
+
+<BaseLayout
+  title={pageTitle(page)}
+  fullHead={page?.seo?.fullHead}
+>
+  <!-- HERO SECTION -->
+  <section class="member-sec">
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-7">
+          <div class="allabout-memberss" set:html={page?.content ?? ""}></div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="image-members">
+            {page?.featuredImage?.node?.sourceUrl && (
+            <img
+              src={page.featuredImage.node.sourceUrl}
+              alt={page?.featuredImage?.node?.altText ?? ""}
+              width="611"
+              height="408"
+            />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS SECTION -->
+  <section class="steps-data">
+    <div class="container">
+      
+      <!-- Dynamic Title -->
+      <div class="main-title">
+        <h2 class="fs-50">{acf?.mainTitle}</h2>
+      </div>
+
+      <div class="main-flow-data-step">
+        
+        <!-- LEFT STATIC (optional remove later) -->
+        <div class="left-flow">
+          <img src="/assets/img/how-to-enroll-white.png" alt="" class="login" />
+         
+        </div>
+
+        <!-- RIGHT DYNAMIC -->
+        <div class="right-fow">
+          <div class="info">
+
+            {
+              toArray(acf?.steps).map((step, index) => (
+                <div class="content">
+                  
+                  <!-- Step Content (HTML from ACF) -->
+                  <div set:html={step?.stepContent ?? ""}></div>
+
+                  <!-- Step Image -->
+                  {
+                    step?.stepPictures?.node?.sourceUrl && (
+                      <div class="step-img">
+                        <img
+                          src={step.stepPictures.node.sourceUrl}
+                          alt={step.stepPictures.node?.altText ?? ""}
+                        />
+                      </div>
+                    )
+                  }
+
+                </div>
+              ))
+            }
+
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT INFO (Dynamic) -->
+      <div class="full-deatils" set:html={acf?.fullContactInformation ?? ""}></div>
+
+      <!-- LETTER SECTION (Dynamic) -->
+      <div class="reconixe-holders" set:html={acf?.fivePointLetter ?? ""}></div>
+
+    </div>
+  </section>
+</BaseLayout>

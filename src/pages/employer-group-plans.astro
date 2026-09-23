@@ -1,0 +1,143 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `
+query GetPage {
+  page(id: "employer-group", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+    employerPlan {
+      employerPlan {
+        backgroundColor
+        sbcPlan
+       summaryLink
+      paymentLink {
+        target
+        title
+        url
+      }
+        title
+      }
+      fivePointLetter
+      employerGalarry {
+        gallaryProfile {
+          node {
+            sourceUrl
+            mediaDetails {
+              height
+              width
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+let plan = await fetchAPI(Homequery);
+const page = plan?.page;
+---
+
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section
+    class="employermain-sec section-padding shoupourplans-sec bg-flow bg-white"
+  >
+    <!-- GALLERY -->
+    <div class="imageempoyergroups">
+      {
+        toArray(page?.employerPlan?.employerGalarry).map((item, index) => {
+          const img = item?.gallaryProfile?.node;
+          if (!img?.sourceUrl) return null;
+
+          return (
+            <img key={index} src={img.sourceUrl} alt={`gallery-${index}`} />
+          );
+        })
+      }
+    </div>
+
+    <div class="container">
+      <!-- PAGE CONTENT -->
+      <div set:html={page?.content ?? ""} />
+
+      <!-- PLANS -->
+      <div class="plans-gridholders">
+        <div class="row justify-content-center">
+          <div class="col-10 mx-auto">
+            <div class="row justify-content-center">
+              {
+                toArray(page?.employerPlan?.employerPlan).map((plan, index) => (
+                  <div class="col-md-6 col-lg-6" key={index}>
+                    <div class="holders-planssss">
+                      <h4 class="fs-20">{plan?.title}</h4>
+
+                      <div class="image-holderssplanss">
+                        <div
+                          class="allchild-holders"
+                          style={{ background: plan?.backgroundColor }}
+                        >
+                          <div class="image-dtaaplans">
+                            <img
+                              src="/assets/img/logoplans.png"
+                              width="350"
+                              height="160"
+                              loading="lazy"
+                              alt={plan?.title}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="button-plansss">
+                        <div class="grid-butttonsplans">
+                          <div class="universal-newbutton btns">
+                            <a
+                              href={plan?.summaryLink}
+                              target="_blank"
+                              class="newbutton-universal"
+                              style="font-weight: 600;"
+                            >
+                              Medical Benefit Summary
+                            </a>
+                          </div>
+                          {plan?.title !== "Reference-Based Pricing Plan" && (
+                            <div className="universal-newbutton btns">
+                              <a
+                                href={plan?.sbcPlan}
+                                target="_blank"
+                                class="newbutton-universal"
+                                style="font-style: normal; font-weight: 700;"
+                              >
+                                {plan?.title} SBC
+                              </a>
+                            </div>
+                          )}
+                          
+                          <a href={plan?.paymentLink?.url}class="c-btn">
+                            Enroll Now
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- EXTRA CONTENT -->
+        <div set:html={page?.employerPlan?.fivePointLetter ?? ""} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

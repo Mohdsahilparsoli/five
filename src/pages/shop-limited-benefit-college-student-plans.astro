@@ -1,0 +1,265 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const shop = `query GetPage {
+  page(id: "shop-limited-benefit-college-student-plans", idType: URI) {
+    title
+    content
+    slug
+    uri
+    seo {
+      title
+      fullHead
+    }
+    
+    aboutStudent {
+      aboutStudentCoverage
+      memberHeading
+      memberLoop {
+        
+        memberHeading
+        memberText
+        memberProfile {
+          node {
+            sourceUrl
+            mediaDetails {
+              file
+              filePath
+              height
+              width
+            }
+          }
+        }
+      }
+      shopPlans {
+        backgroundColor
+        sbcLink
+        summaryLink
+        title
+        paymentLink {
+          target
+          title
+          url
+        }
+      }
+  	
+     fivePointLetter
+      aboutStudentProfile {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        altText
+        mediaDetails {
+          height
+          width
+        }
+      }
+    }
+  }
+}`;
+
+let shoppage = await fetchAPI(shop);
+const page = shoppage?.page;
+---
+
+<BaseLayout title={page?.title || pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="member-sec">
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-7" set:html={page?.content ?? ""} />
+        <div class="col-lg-5">
+          <div class="image-members">
+            {page?.featuredImage?.node?.sourceUrl && (
+            <img
+              src={page?.featuredImage?.node?.sourceUrl}
+              alt={"Limited Benefit College Plans"}
+              width={page?.featuredImage?.node?.mediaDetails?.width}
+              height={page?.featuredImage?.node?.mediaDetails?.height}
+            />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="about-student">
+    <div class="container">
+      <div class="row align-items-center space-between">
+        <div class="col-lg-5">
+          <div class="about-img">
+            {page?.aboutStudent?.aboutStudentProfile?.node?.sourceUrl && (
+            <img
+              src={page?.aboutStudent?.aboutStudentProfile?.node?.sourceUrl}
+              width={`shoppage.page.aboutStudent.aboutStudentProfile.node.mediaDetails.width`}
+              height={page?.aboutStudent?.aboutStudentProfile?.node?.mediaDetails?.height}
+            />
+            )}
+          </div>
+        </div>
+        <div
+          class="col-lg-6"
+          set:html={page?.aboutStudent?.aboutStudentCoverage ?? ""}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="about-student" style="background-color: #F4F9FC;">
+    <div class="container">
+      <div class="row ">
+        <div class="col-lg-7">
+         <div class="about-student-content">
+  <h2 class="fs-30">Health Coverage for Students in Medical Programs</h2>
+
+  <p>
+  Our plans provide coverage for students in the following 
+majors or healthcare programs: 
+  </p>
+  <ul>
+    <li>Medical Doctors</li>
+    <li>Physicians</li>
+    <li>Physician Assistants/Associates</li>
+   <li>Nursing</li>
+   <li>Nurse Practitioners</li>
+   <li>Ultrasound/MRI/PET Scan Technicians</li>
+   <li>Dental Practitioners</li>
+   <li>And other related healthcare programs</li>
+  </ul>
+</div>
+        </div>
+        <div class="col-lg-5">
+          <div class="about-img" style="margin-top: 15px;">
+            <img src="https://web.ogrelogicsolutions.com/fivepointsbenefits-astro/wp-content/uploads/2026/04/health-coverage.webp" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="pharmacy main-content w-100" style="background-color: #FFFFFF;">
+    <div class="container">
+      <div class="headings-flow">
+        <h2 class="fs-40">
+          {page?.aboutStudent?.memberHeading}
+        </h2>
+      </div>
+
+      <div class="grid-sytem">
+        {
+          toArray(page?.aboutStudent?.memberLoop).map((item, index) => (
+            <div class="grid-ph" key={index}>
+              <div class="ph-icons">
+                {item?.memberProfile?.node?.sourceUrl && (
+                <img
+                  src={item?.memberProfile?.node?.sourceUrl}
+                  alt={item?.memberHeading}
+                />
+                )}
+              </div>
+
+              <div class="ph-content">
+                <h3>{item?.memberHeading}</h3>
+                <p>{item?.memberText}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="shoupourplans-sec section-padding bg-flow bg-white">
+    <div class="container">
+      <div class="plans-gridholders">
+        <div class="row palnsrows">
+          <div class="col-12">
+            <div class="textplans-mainsss">
+              <h4 class="fs-40">Choose The Plan That Fits You:</h4>
+            </div>
+          </div>
+
+          <div class="row justify-content-center">
+            <div class="col-10 mx-auto">
+              <div class="row justify-content-center loop-data">
+                {
+                  toArray(page?.aboutStudent?.shopPlans).map((plan, index) => (
+                    <div class="col-md-6 col-lg-6" key={index}>
+                      <div class="holders-planssss">
+                        <h4 class="fs-20">{plan?.title}</h4>
+
+                        <div class="image-holderssplanss">
+                          <div
+                            class="allchild-holders"
+                            style={{ background: plan?.backgroundColor }}
+                          >
+                            <div class="image-dtaaplans">
+                              <img
+                                src="/assets/img/student-logo.webp"
+                                width="350"
+                                height="160"
+                                loading="lazy"
+                                alt={plan?.title}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="button-plansss">
+                          <div class="grid-butttonsplans">
+                            <div class="universal-newbutton btns">
+                              <a
+                                href={plan?.summaryLink}
+                                target="_blank"
+                                class="newbutton-universal"
+                                style="    font-style: normal;"
+                              >
+                                Medical Benefit Summary
+                              </a>
+                            </div>
+
+                            <div class="universal-newbutton">
+                              <a
+                                href={plan?.sbcLink}
+                                target="_blank"
+                                class="newbutton-universal"
+                              >
+                                {plan?.title} Plan SBC
+                              </a>
+                            </div>
+                          <a href={plan?.paymentLink?.url} target="_blank" class="c-btn">Enroll Now</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+         
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="reconixe-holders">
+    <div
+      class="reconixe-holders"
+      set:html={page?.aboutStudent?.fivePointLetter ?? ""}
+    />
+  </div>
+</BaseLayout>

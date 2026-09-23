@@ -1,0 +1,149 @@
+---
+import { fetchAPI, pageTitle, toArray } from "../../lib/wordpress";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+
+
+
+const GetPage = `
+query GetPage {
+  page(id: "about-us", idType: URI) {
+    title
+    content
+    slug
+    date
+    seo {
+      title
+      fullHead
+    }
+    featuredImage{
+      node{
+        sourceUrl
+        altText
+        mediaDetails{
+          width
+          height
+        }
+      }
+    }
+  }
+}
+`;
+
+
+const postquery = `query GetAllPost {
+  members {
+    nodes {
+      title
+      slug
+      excerpt
+      memberCategories{
+        nodes{
+          name
+          slug
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+}`;
+
+// 🚀 Dono queries parallel
+const [data, post] = await Promise.all([fetchAPI(GetPage), fetchAPI(postquery)]);
+
+const page = data?.page;
+const featured = page?.featuredImage?.node;
+const allMembers = toArray(post?.members?.nodes).filter(Boolean);
+
+const categoryOf = (m) => m?.memberCategories?.nodes?.[0]?.slug;
+const Executive = allMembers.filter((m) => categoryOf(m) === "executive");
+const Administration = allMembers.filter((m) => categoryOf(m) === "administration");
+---
+
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="in-banner">
+    <div class="container">
+      <div class="main-titles">
+        <h1 class="fs-60">{page?.title}</h1>
+      </div>
+      <div class="main-about">
+        {featured?.sourceUrl && (
+        <img
+          src={featured.sourceUrl}
+          alt={page?.title ?? ""}
+          width={featured?.mediaDetails?.width}
+          height={featured?.mediaDetails?.height}
+        />
+        )}
+      </div>
+
+      <div class="top-header">
+        <div class="top-title">
+          <h2 class="fs-80">
+            <span>M</span>eet <span>O</span>ur <span>T</span>eam
+          </h2>
+        </div>
+        <h3 class="fs-30">Executive team</h3>
+      </div>
+      <div class="main-grid-list">
+        {
+          Executive.map((member) => (
+            <a href={`/about-us/${member?.slug ?? ""}`}>
+              <div class="grid-card">
+                <div class="main-team-img">
+                  {member?.featuredImage?.node?.sourceUrl && (
+                  <img
+                    src={member.featuredImage.node.sourceUrl}
+                    alt={member?.title ?? ""}
+                    width={member.featuredImage.node?.mediaDetails?.width}
+                    height={member.featuredImage.node?.mediaDetails?.height}
+                  />
+                  )}
+                </div>
+
+                <div class="title">
+                  <h3>{member?.title}</h3>
+                  <p set:html={member?.excerpt ?? ""} />
+                </div>
+              </div>
+            </a>
+          ))
+        }
+        <div class="full-titles">
+          <h3 class="fs-30">Administration</h3>
+        </div>
+        {
+          Administration.map((member) => (
+            <a href={`/about-us/${member?.slug ?? ""}`}>
+              <div class="grid-card">
+                <div class="main-team-img">
+                  {member?.featuredImage?.node?.sourceUrl && (
+                  <img
+                    src={member.featuredImage.node.sourceUrl}
+                    alt={member?.title ?? ""}
+                    width={member.featuredImage.node?.mediaDetails?.width}
+                    height={member.featuredImage.node?.mediaDetails?.height}
+                  />
+                  )}
+                </div>
+
+                <div class="title">
+                  <h3>{member?.title}</h3>
+                  <p set:html={member?.excerpt ?? ""} />
+                </div>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

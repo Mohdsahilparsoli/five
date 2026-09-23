@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Contactinfo = `
+query GetPage {
+  page(id: "contact-details", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+    contactInfo {
+      contactDetails {
+        contactDetail
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          height
+          width
+        }
+      }
+    }
+  }
+}
+`;
+
+let contactinfo = await fetchAPI(Contactinfo);
+const page = contactinfo?.page;
+---
+
+
+  <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="contact-us-flow">
+    <div class="container">
+      <!-- IMAGE -->
+      <div class="main-img">
+        {page?.featuredImage?.node?.sourceUrl && (
+        <img
+          src={page?.featuredImage?.node?.sourceUrl}
+          alt={page?.title}
+        />
+        )}
+      </div>
+
+      <!-- CONTENT -->
+      <div class="main-titles-con" set:html={page?.content ?? ""} />
+
+      <!-- CONTACT OPTIONS -->
+      <div class="contact-info-flows">
+        <h3 class="fs-30">Contact Options</h3>
+
+        <div class="row-flow-contact">
+          {
+            toArray(page?.contactInfo?.contactDetails).map((item) => (
+              <div set:html={item?.contactDetail ?? ""} />
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

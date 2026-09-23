@@ -1,0 +1,191 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Homequery = `query GetPage {
+  page(id: "member-login", idType: URI) {
+    title
+    content
+    slug
+    uri
+    seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+let portal = await fetchAPI(Homequery);
+const page = portal?.page;
+---
+
+<BaseLayout
+  title={pageTitle(page)}
+  fullHead={page?.seo?.fullHead}
+>
+  <section
+    class="portal-login"
+    style="background-image: url(/assets/img/bg-img.webp)"
+  >
+    <div class="container">
+      <div class="login-form">
+        <!-- Logo Top -->
+        <div class="main-logo">
+          <img src="/assets/img/logo.png" alt="Points Healthcare" />
+        </div>
+
+        <div class="top-login-content">
+          <!-- Updated Title -->
+          <h1>Secure Member Log In</h1>
+
+          <div class="save">
+            <a
+              href="https://portal.fivepointsbenefitplans.com/login"
+              target="_blank"
+            >
+              Login to Your Account
+            </a>
+          </div>
+
+          <div class="login-from">
+            <div class="divider"></div>
+
+            <div class="bottom-tiles">
+              <span>Don’t have an account?</span>
+              <p>
+                Activate now to get the <br />
+                most of your policy.
+              </p>
+            </div>
+
+            <div class="activate-btn">
+              <a href="https://portal.fivepointsbenefitplans.com/setup-account" target="_blank">Activate Your Account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="login-section">
+    <div class="top-titles">
+      <span>Five Points Benefit Plans Member Portal</span>
+    </div>
+
+    <div class="container">
+      <div class="login-from">
+        <!-- Setup Account -->
+        <div class="login-flow">
+          <div class="content">
+            <h3>Setup Your Account</h3>
+            <p>
+              Enter Your Email Address to Begin Setup.
+              <br />
+              A Verification Code will be Sent to Your Email.
+              <br />
+              Please Check Your Inbox or Spam Folder.
+            </p>
+          </div>
+
+          <div class="save">
+            <a
+              href="https://portal.fivepointsbenefitplans.com/setup-account"
+              target="_blank"
+            >
+              Set Up Your Account
+            </a>
+          </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="login-flow">
+          <div class="content">
+            <h3>Forgot Password</h3>
+            <p>
+              Enter Your Registered Email Address to Reset Your Password.
+            </p>
+          </div>
+
+          <div class="save">
+            <a
+              href=" https://portal.fivepointsbenefitplans.com/forgot-password"
+              target="_blank"
+            >
+              Reset Your Password
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Section -->
+      <div class="otheritles">
+        <h2>Log in to Manage Your Health Plan</h2>
+        <p>
+          Creating a provider account gives you access to your patient’s plan
+          information and other resources.
+        </p>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="main-grild-portal">
+        <div class="grid-data">
+          <span>Track Claims</span>
+          <img src="/assets/img/g1.png" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>Get Your Digital ID Cards</span>
+          <img src="/assets/img/g2.webp" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>Check Your Benefits & Coverage</span>
+          <img src="/assets/img/g3.png" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>Find Providers In Your Network</span>
+          <img src="/assets/img/g4.png" alt="" />
+        </div>
+
+        <div class="grid-data">
+          <span>Pay Your Premium (if applicable)</span>
+          <img src="/assets/img/g5.png" alt="" />
+        </div>
+      </div>
+
+      <!-- Middle Image -->
+      <div class="m-img">
+        <img src="/assets/img/m-img.png" alt="" />
+      </div>
+
+      <!-- Security Section -->
+      <div class="main-img-flow">
+        <div class="account-secuirty">
+          <h3 class="fs-35">Account Security</h3>
+          <p>
+            Your privacy is important and we follow state and federal
+            regulations
+          </p>
+
+          <ul>
+            <li>
+              Each member account requires a unique email address to protect
+              personal health information
+            </li>
+            <li>
+              Policy holders have access to family totals, their claims and
+              those of minors under 12
+            </li>
+            <li>
+              Children 12 and older and spouses are required to have their own
+              online account to see claim detail
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

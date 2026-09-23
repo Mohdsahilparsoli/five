@@ -1,0 +1,128 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `query GetPage {
+  page(id: "individual-family-rbp", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+    employerGroupRbp {
+      employerRbpPlan {
+        backgroundColor
+        enrollmentApplication
+        groupRegistrationForm
+        platinumRbpPlanSob
+        title
+         paymentLink {
+        target
+        title
+        url
+      }
+      }
+      fivePointLetter
+      rbpPricing
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+         
+          height
+          width
+        }
+      }
+    }
+ 
+  
+  }
+}`;
+
+let employergrouprbp = await fetchAPI(Homequery);
+const page = employergrouprbp?.page;
+---
+
+   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<section class="employermain-sec section-padding">
+        <div class="container">
+          <div class="employer-holderss">
+            <div class="imageempoyergroups w-100">
+              <span>REFERENCE-BASED PRICING</span>
+              {page?.featuredImage?.node?.sourceUrl && (
+              <img src={page?.featuredImage?.node?.sourceUrl} alt={page?.title} width={page?.featuredImage?.node?.mediaDetails?.width} height={page?.featuredImage?.node?.mediaDetails?.height} />
+              )}
+            </div>
+
+            <div class="allaboutgroups w-100" set:html={page?.content ?? ""}>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="shoupourplans-sec section-padding pt-0">
+        <div class="container">
+          <div class="plans-holderss">
+            <div set:html={page?.employerGroupRbp?.rbpPricing ?? ""}></div>
+
+            <div class="plans-gridholders">
+              <div class="row palnsrows justify-content-center">
+                <div class="col-12">
+                  <div class="textplans-mainsss">
+                    <h4 class="fs-40 italic">Our RBP Plan</h4>
+                  </div>
+                </div>
+                  {
+                    toArray(page?.employerGroupRbp?.employerRbpPlan).map((item)=>{
+                      return <div class="col-md-6  col-lg-4">
+                            <div class="holders-planssss">
+                              <h4 class="fs-20 " style="color: #67b052;">INDIVIDUALS & FAMILY, STUDENTS</h4>
+                                <h4 class="fs-20 pb-2">REFERENCE-BASED  PRICING</h4>
+                                <span></span>
+                                <div class="image-holderssplanss">
+                                    <div class="allchild-holders" style=`background: ${item?.backgroundColor ?? ""};`>
+                                        <div class="image-dtaaplans">
+                                            <img src="/assets/img/logoplans.png" width="350" height="160" loading="lazy">
+                                        </div>
+                                        <div class="allplans-detailsss">
+                                         
+                                            <p>{item?.title}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="button-plansss plan">
+                                    <div class="grid-butttonsplans">
+                                        <div class="universal-newbutton">
+                                            <a href={item?.platinumRbpPlanSob} target="_blank" class="newbutton-universal" title="RBP Plan SOB">
+                                            RBP Plan SOB</a>
+                                        </div>
+                                       
+                                        <div class="universal-newbutton">
+                                            <a href={item?.enrollmentApplication} target="_blank" class="newbutton-universal" title="ENROLLMENT APPLICATION">ENROLLMENT APPLICATION</a>
+                                        </div>
+                                          <a href={item?.paymentLink?.url} class="c-btn">Enroll Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    })
+                  }
+
+              </div>
+
+              <div class="reconixe-holders" set:html={page?.employerGroupRbp?.fivePointLetter ?? ""}>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+</BaseLayout>
+

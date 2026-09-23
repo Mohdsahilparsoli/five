@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Homequery = `query GetPage {
+  page(id: "teladoc", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+    teladoc {
+      appDownloadSection
+      teladocInfo {
+        teladocProfile {
+          node {
+            sourceUrl
+          }
+        }
+        teladocDescription
+        teladocTitle
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          file
+          filePath
+          height
+          width
+        }
+      }
+    }
+  }
+}`;
+
+let teladoc = await fetchAPI(Homequery);
+const page = teladoc?.page;
+---
+
+     <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="teladoc">
+    <div class="container">
+      <div class="main-logo-teladoc">
+        <a href="https://www.teladochealth.com/" target="_blank">
+          {page?.featuredImage?.node?.sourceUrl && (
+          <img
+            src={page?.featuredImage?.node?.sourceUrl}
+            alt={page?.title}
+            height={page?.featuredImage?.node?.mediaDetails?.height}
+            width={page?.featuredImage?.node?.mediaDetails?.width}
+          />
+          )}</a
+        >
+      </div>
+      <div class="tedoc-titles" set:html={page?.content ?? ""} />
+
+      <div class="main-grid-flow">
+        {
+          toArray(page?.teladoc?.teladocInfo).map((curent) => {
+            return (
+              <div class="grid-one">
+                <div class="icons">
+                  {curent?.teladocProfile?.node?.sourceUrl && (
+                  <img
+                    src={curent?.teladocProfile?.node?.sourceUrl}
+                    alt={curent?.teladocTitle}
+                    height="100"
+                    width="108"
+                  />
+                  )}
+                </div>
+                <div class="content">
+                  <h3>{curent?.teladocTitle}</h3>
+                  <p>{curent?.teladocDescription}</p>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+      <div
+        class="main-center-content"
+        set:html={page?.teladoc?.appDownloadSection ?? ""}
+      />
+    </div>
+  </section>
+</BaseLayout>

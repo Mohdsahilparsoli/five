@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+const Howtoenrol = `
+query GetPage {
+  page(id: "how-to-enroll-employer-groups", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+   
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          file
+          filePath
+          height
+          width
+        }
+      }
+    }
+  }
+}
+`;
+
+let employerenroll = await fetchAPI(Howtoenrol);
+const page = employerenroll?.page;
+---
+
+   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="contact-us-flow how-to-enrol">
+    <div class="container">
+      <div class="main-img">
+        {page?.featuredImage?.node?.sourceUrl && (
+        <img
+          src={page?.featuredImage?.node?.sourceUrl}
+          alt={page?.title}
+          height={page?.featuredImage?.node?.mediaDetails?.height}
+          width={page?.featuredImage?.node?.mediaDetails?.width}
+        />
+        )}
+      </div>
+      <div set:html={page?.content ?? ""} />
+    </div>
+  </section>
+</BaseLayout>

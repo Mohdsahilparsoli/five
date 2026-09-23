@@ -1,0 +1,130 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `query GetPage {
+  page(id: "member", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          
+          height
+          width
+        }
+      }
+    }
+    memberPortal {
+      memberPortalInfo
+      findeCarePortal
+      optumrx {
+        link
+        subTitle
+        title
+        optumrxProfile {
+          node {
+            sourceUrl
+            mediaDetails {
+              file
+              filePath
+              height
+              width
+            }
+          }
+        }
+      }
+      formFinderPortal
+    }
+  }
+}`;
+
+let member = await fetchAPI(Homequery);
+
+const page = member?.page;
+const items = toArray(page?.memberPortal?.optumrx);
+---
+
+   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="member-sec">
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-7" set:html={page?.content ?? ""} />
+        <div class="col-lg-5">
+          <div class="image-members">
+            {page?.featuredImage?.node?.sourceUrl && (
+            <img
+              src={page?.featuredImage?.node?.sourceUrl}
+              alt={page?.title}
+              width={page?.featuredImage?.node?.mediaDetails?.width}
+              height={page?.featuredImage?.node?.mediaDetails?.height}
+            />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    class="memberportal-secc"
+    set:html={page?.memberPortal?.memberPortalInfo ?? ""}
+  />
+  <section
+    class="finalcare-sec"
+    set:html={page?.memberPortal?.findeCarePortal ?? ""}
+  />
+  <section class="pharmacy">
+    <div class="container">
+      <div class="headings-flow">
+        <h2 class="fs-40">
+          Get the Most from Your Pharmacy Coverage Through OptumRx
+        </h2>
+      </div>
+      <div class="grid-sytem">
+        {
+          items.map((item) => (
+            <div class="grid-ph">
+              <div class="ph-icons">
+                {item?.optumrxProfile?.node?.sourceUrl && (
+                <img
+                  src={item?.optumrxProfile?.node?.sourceUrl}
+                  alt={item?.title}
+                />
+                )}
+              </div>
+
+              <div class="ph-content">
+                <h3>{item?.title}</h3>
+                <p>{item?.subTitle}</p>
+
+               
+              </div>
+            </div>
+          ))
+        }
+      </div>
+       <div class="univesral-button btn-f">
+                  <a href={"https://www.optumrx.com/"} target="_blank" class="c-btn">
+                    <span>OptumRx</span>
+                  </a>
+                </div>
+    </div>
+  </section>
+  <section class="finalcare-sec">
+    <div class="container">
+      <div
+        class="row gy-4 align-items-center"
+        set:html={page?.memberPortal?.formFinderPortal ?? ""}
+      />
+    </div>
+  </section>
+</BaseLayout>

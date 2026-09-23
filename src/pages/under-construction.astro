@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Under Construction">
+  <section class="under-construction">
+    <div class="container">
+      <div class="uc-box">
+        
+        <h1 class="fs-60">🚧 Under Construction</h1>
+
+        <p>
+          This page is currently under development. We are working hard to make it
+          available as soon as possible. Please check back soon.
+        </p>
+
+        <a href="/" class="uc-btn">Go Back to Home</a>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+    .under-construction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background: #f8f9fb;
+  padding: 40px 20px;
+}
+
+.uc-box {
+  text-align: center;
+  max-width: 600px;
+  background: #fff;
+  padding: 50px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  margin: 0 auto;
+}
+
+.uc-box h1 {
+  font-size: var(  --fs-40);
+    color: #1f6f80;
+  margin-bottom: 10px;
+font-weight: 600;
+}
+.under-construction p {
+    font-size: 18px;
+    font-weight: 400;
+    color: #1f6f80 !important;
+}
+
+/* .uc-box p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 25px;
+  line-height: 1.6;
+} */
+
+.uc-btn {
+  display: inline-block;
+  padding: 12px 28px;
+    background-color: #008151;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+  margin-top: 20px;
+}
+
+.uc-btn:hover {
+  background: #425094;
+}
+@media (max-width:575px) {
+    uc-box{
+        padding: 30px;
+    }
+}
+</style>

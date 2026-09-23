@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+
+
+const Homequery = `query GetPage {
+  page(id: "form-finder", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+featuredImage {
+  node {
+    sourceUrl
+    mediaDetails {
+      file
+      filePath
+      height
+      width
+    }
+  }
+}
+    formFinder {
+      formFinderInfo
+    }
+  }
+}`;
+
+let formfinder = await fetchAPI(Homequery);
+const page = formfinder?.page;
+---
+
+ <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="member-sec provider data-flow data-text">
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-7" set:html={page?.content ?? ""} />
+        <div class="col-lg-5">
+          <div class="image-members">
+            {page?.featuredImage?.node?.sourceUrl && (
+            <img
+              src={page?.featuredImage?.node?.sourceUrl}
+              alt={page?.title}
+              width={page?.featuredImage?.node?.width}
+              height={page?.featuredImage?.node?.height}
+            />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="memberportal-secc bg-white flow">
+    <div set:html={page?.formFinder?.formFinderInfo ?? ""} />
+  </section>
+</BaseLayout>

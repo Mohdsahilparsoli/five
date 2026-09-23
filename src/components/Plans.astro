@@ -1,0 +1,96 @@
+---
+import { fetchAPI, PLANS_QUERY, toArray } from "../lib/wordpress";
+
+const res = await fetchAPI(PLANS_QUERY);
+
+const order = {
+  "employer group plans": 1,
+  "college student plans": 2,
+  "individual & family plans": 3,
+};
+
+// Copy karke sort (cached data mutate na ho)
+const plansData = [...toArray(res?.ourPlans?.nodes)]
+  .filter(Boolean)
+  .sort(
+    (a, b) =>
+      (order[(a?.title ?? "").toLowerCase()] || 99) -
+      (order[(b?.title ?? "").toLowerCase()] || 99)
+  );
+---
+
+<div class="plans-grid">
+  <div class="swiper mySwipercardsliders">
+    <div class="swiper-wrapper">
+
+      {
+        plansData.map((plan, index) => {
+          const img = plan?.featuredImage?.node;
+
+          const sizes = toArray(img?.mediaDetails?.sizes);
+          const small = sizes.find(s => s?.name === "medium")?.sourceUrl || img?.sourceUrl;
+          const large = sizes.find(s => s?.name === "large")?.sourceUrl || img?.sourceUrl;
+
+          const isFirst = index === 0;
+
+          return (
+            <div class="swiper-slide">
+              <div class="plan-card">
+
+                <div class="plan-img">
+                  <a href={`/${plan?.slug ?? ""}`}>
+
+                    {img?.sourceUrl && (
+                      <img
+                        src={large}
+                        srcset={`
+                          ${small} 400w,
+                          ${large} 800w,
+                          ${img.sourceUrl} 1200w
+                        `}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+
+                        alt={plan?.title ?? ""}
+                        width={img.mediaDetails?.width || 400}
+                        height={img.mediaDetails?.height || 300}
+
+                        loading={isFirst ? "eager" : "lazy"}
+                        fetchpriority={isFirst ? "high" : "auto"}
+                        decoding="async"
+
+                        style="width:100%; height:auto;"
+                      />
+                    )}
+
+                  </a>
+                </div>
+
+                <div class="plan-data" style="min-height: 260px;">
+                  <div>
+                    <h3 class="fs-25">
+                      <a href={`/${plan?.slug ?? ""}`}>{plan?.title}</a>
+                    </h3>
+
+                    <div set:html={plan?.excerpt ?? ""} />
+                  </div>
+
+                  <div class="button-card">
+                  <a href={plan?.postLink?.link?.url} class="c-btn">
+  {plan?.postLink?.link?.title || "Explore Plans"}
+</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          );
+        })
+      }
+
+    </div>
+
+    <div class="custom-page">
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</div>

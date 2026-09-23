@@ -1,0 +1,79 @@
+---
+import { fetchAPI } from "../../lib/wordpress";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+
+// SSR mode: koi bhi naya member WordPress mein add karo → page apne aap ban jaayega
+// (getStaticPaths ki zarurat nahi)
+const slug = (Astro.params.slug ?? "").split("/")[0];
+
+/* SINGLE MEMBER QUERY (variables = safe, no string injection) */
+const singleQuery = `query GetMember($slug: ID!) {
+  member(id: $slug, idType: SLUG) {
+    title
+    excerpt
+    slug
+    memberInfo{
+      profileImage {
+        node {
+          id
+          sourceUrl
+        }
+      }
+     contactInfo
+    }
+    
+    content
+    memberCategories {
+      nodes {
+        name
+        slug
+      }
+    }
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          width
+          height
+        }
+      }
+    }
+  }
+}`;
+
+const data = slug ? await fetchAPI(singleQuery, { slug }) : null;
+const member = data?.member;
+const profileImage = member?.memberInfo?.profileImage?.node?.sourceUrl;
+
+// Member na mile to 404 status (page crash nahi hoga)
+if (!member) Astro.response.status = 404;
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <div class="single-team-mamber">
+    <div class="container">
+      <div class="main-conent">
+        <div class="team-img">
+          <div class="img">
+            {profileImage && (
+            <img
+              src={profileImage}
+              alt="founder"
+            />
+            )}
+          </div>
+          <div class="contact-info-flow">
+            <div set:html={member?.memberInfo?.contactInfo ?? ""} />
+          </div>
+        </div>
+        <div class="team-content">
+          <div set:html={member?.content ?? ""} />
+          <a href={`${Astro.url.origin}/management-team`}
+            >Back to Management Team</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

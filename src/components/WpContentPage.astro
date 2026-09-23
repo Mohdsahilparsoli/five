@@ -1,0 +1,36 @@
+---
+/**
+ * Reusable WordPress content page
+ * (MEC / Allegra / Silver / Sky / Ocean ... sab plan pages isi se render hote hain)
+ * DOM bilkul same hai: <section class="mission-statement" set:html=...>
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
+
+interface Props {
+  uri: string;
+}
+
+const { uri } = Astro.props;
+
+const QUERY = `query GetPage($uri: ID!) {
+  page(id: $uri, idType: URI) {
+    title
+    slug
+    uri
+    content
+    seo {
+      title
+      fullHead
+    }
+  }
+}`;
+
+const data = await fetchAPI(QUERY, { uri });
+const page = data?.page;
+---
+
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="mission-statement" set:html={page?.content ?? ""}>
+  </section>
+</BaseLayout>

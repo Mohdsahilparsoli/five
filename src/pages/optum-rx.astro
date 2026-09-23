@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+
+
+const Homequery = `query GetPage {
+  page(id: "optumrx", idType: URI) {
+    title
+    content
+    slug
+    uri
+     seo {
+      title
+      fullHead
+    }
+        optumrx {
+      pharmacyRxInfo
+      aboutOptumrx
+      optumrxFeatures
+    }
+    featuredImage {
+      node {
+       sourceUrl
+        mediaDetails {
+          file
+          filePath
+          height
+          width
+        }
+      }
+    }
+  }
+}`;
+
+let optumrx = await fetchAPI(Homequery);
+const page = optumrx?.page;
+---
+
+     <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <section class="member-sec" >
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+        <div class="col-lg-7">
+          <div class="allabout-memberss flow" set:html={page?.content ?? ""} />
+        </div>
+        <div class="col-lg-5">
+          <div class="image-members">
+            <a href="https://www.optumrx.com/" target="_blank">
+              {page?.featuredImage?.node?.sourceUrl && (
+              <img
+                src={page?.featuredImage?.node?.sourceUrl}
+                alt={page?.title}
+                width={page?.featuredImage?.node?.mediaDetails?.width}
+                height={page?.featuredImage?.node?.mediaDetails?.height}
+              />
+              )}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="memberportal-secc" >
+    <div class="container" set:html={page?.optumrx?.pharmacyRxInfo ?? ""} />
+  </section>
+
+  <section class="optum-rx-welcome" style="background-image: url('/assets/img/back-backgound-otm.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;" >
+    <div class="container" set:html={page?.optumrx?.aboutOptumrx ?? ""} />
+  </section>
+
+  <section class="optumax-fe">
+    <div class="container" set:html={page?.optumrx?.optumrxFeatures ?? ""} />
+  </section>
+</BaseLayout>

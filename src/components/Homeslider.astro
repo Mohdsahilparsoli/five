@@ -1,0 +1,75 @@
+---
+import { fetchAPI, HOME_SLIDER_QUERY, toArray } from "../lib/wordpress";
+
+const Slider = await fetchAPI(HOME_SLIDER_QUERY);
+
+const order = {
+  "For Employer Groups": 1,
+  "For College Students": 2,
+  "For Individuals & Families": 3,
+};
+
+// Copy karke sort (cached data mutate na ho)
+const sortedSliders = [...toArray(Slider?.homeSliders?.nodes)]
+  .filter(Boolean)
+  .sort((a, b) => (order[a?.title] ?? 99) - (order[b?.title] ?? 99));
+---
+
+{
+  sortedSliders.map((curent, index) => {
+    return (
+      <div class="slider-js">
+        
+        <div class="swiper mySwiperthree">
+          <div class="swiper-wrapper">
+
+            {toArray(curent?.homeSliderImage?.homeSliderImg).map((curentval, i) => {
+              const img = curentval?.sliderImg?.node;
+              if (!img?.sourceUrl) return null;
+
+              const sizes = toArray(img?.mediaDetails?.sizes);
+              const small = sizes.find(s => s?.name === "medium")?.sourceUrl || img.sourceUrl;
+              const large = sizes.find(s => s?.name === "large")?.sourceUrl || img.sourceUrl;
+
+              const isLCP = index === 0 && i === 0;
+
+              return (
+                <div class="swiper-slide">
+                  <div class="main-slider-img">
+
+                    <img
+                      src={large}
+                      srcset={`
+                        ${small} 480w,
+                        ${large} 1024w,
+                        ${img.sourceUrl} 1600w
+                      `}
+                      sizes="(max-width: 768px) 100vw, 800px"
+
+                      alt={curent?.title ?? ""}
+                      width={img?.mediaDetails?.width}
+                      height={img?.mediaDetails?.height}
+
+                      loading={isLCP ? "eager" : "lazy"}
+                      fetchpriority={isLCP ? "high" : "auto"}
+                      decoding="async"
+
+                      style="width:100%; height:auto;"
+                    />
+
+                  </div>
+                </div>
+              );
+            })}
+
+          </div>
+        </div>
+
+        <div class="top-section-data" set:html={curent?.content ?? ""}>
+          
+        </div>
+
+      </div>
+    );
+  })
+}

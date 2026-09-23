@@ -1,0 +1,43 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, class: className, ...props } = Astro.props;
+
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
+const subpath = pathname.match(/[^\/]+/g);
+const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+
+// ✅ PDF check
+const isPdf = typeof href === 'string' && href.toLowerCase().includes('.pdf');
+
+// ✅ external target
+const target = isPdf ? '_blank' : props.target;
+const rel = isPdf ? 'noopener noreferrer' : props.rel;
+---
+
+<a
+  href={href}
+  class:list={[className, { active: isActive }]}
+  target={target}
+  rel={rel}
+  {...props}
+>
+  <slot />
+</a>
+
+<style>
+  a {
+    position: relative;
+  }
+
+  a.active {
+    color: var(--color-green);
+    font-weight: 600;
+  }
+
+  .all-here li a::after {
+    /* your style here */
+  }
+</style>
