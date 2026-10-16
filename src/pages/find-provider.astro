@@ -1,131 +1,232 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
-
-
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
 const Homequery = `
-query GetPage {
+query GetFindAProvider {
   page(id: "find-provider", idType: URI) {
     title
     content
     slug
     uri
-     seo {
+    seo {
       title
       fullHead
     }
-    findProvider {
-      memberId
-      network
-      searchInstructions
-      shortInfo
-      shortInfoMember
-       memberIdProfile {
-        memberProfilePicture {
-          node {
-            id
-            sourceUrl
-            altText
+
+    findAProvider {
+      heroTitle
+      heroDiscraption
+      heroLink {
+        title
+        url
+        target
+      }
+
+      networkTitle
+      networkLogo {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
           }
         }
       }
+      networkDiscraption
+      networkSubTitle
+      networkSubDiscraption
+      networkContactDiscraption
+
+      memberTitle
+      memberSortDiscraption
+      memberContactIno
+
+      memberSectionPicture {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+
+      memberPhotoList {
+        memberListPicture {
+          node {
+            sourceUrl
+            altText
+            mediaDetails {
+              file
+              filePath
+              width
+              height
+            }
+          }
+        }
+      }
+
+      memberNote
     }
+
     featuredImage {
       node {
         sourceUrl
+        altText
         mediaDetails {
-          file
-          filePath
-          height
           width
+          height
         }
       }
     }
   }
 }
-  `;
+`;
 
-let provider = await fetchAPI(Homequery);
-const page = provider?.page;
+const response = await fetchAPI(Homequery);
+const page = response?.page;
+const data = page?.findAProvider;
+
+const heroLink = data?.heroLink;
+const heroImage = page?.featuredImage?.node;
+const networkLogo = data?.networkLogo?.node;
+const memberSectionPicture = data?.memberSectionPicture?.node;
+const memberPhotos = data?.memberPhotoList ?? [];
 ---
 
-   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
   <section class="member-sec provider data-flow flow-data">
     <div class="container">
       <div class="row gy-4 align-items-center">
         <div class="col-lg-7">
-          <div
-            class="allabout-memberss fin-provide"
-            set:html={page?.content ?? ""}
-          />
+          <div class="allabout-memberss fin-provide">
+            <p>&nbsp;</p>
+
+            <h1 class="fs-60">{data?.heroTitle}</h1>
+
+            <div set:html={data?.heroDiscraption ?? ""} />
+
+            <div class="main-button">
+              <a
+                class="c-btn"
+                href={heroLink?.url ?? "#"}
+                target={heroLink?.target || undefined}
+                rel={heroLink?.target === "_blank"
+                  ? "noopener noreferrer"
+                  : undefined}
+              >
+                {heroLink?.title ?? "Get Started"}
+              </a>
+            </div>
+          </div>
         </div>
+
         <div class="col-lg-5">
           <div class="image-members">
-            {page?.featuredImage?.node?.sourceUrl && (
             <img
-              src={page?.featuredImage?.node?.sourceUrl}
-              alt={page?.title}
-              width="615"
-              height="348"
+              src={heroImage?.sourceUrl ?? ""}
+              alt={heroImage?.altText ?? data?.heroTitle ?? "Find A Provider"}
+              width={heroImage?.mediaDetails?.width ?? 615}
+              height={heroImage?.mediaDetails?.height ?? 348}
             />
-            )}
           </div>
         </div>
       </div>
     </div>
   </section>
+
   <section class="memberportal-secc bg-white">
     <div class="container">
       <div class="holderebg-here">
-        <div
-          class="center-data"
-          set:html={page?.findProvider?.network ?? ""}
-        />
+        <div class="center-data">
+          <h2 class="fs-40 text-blue">{data?.networkTitle}</h2>
+
+          <div class="first-logo">
+            <img
+              decoding="async"
+              src={networkLogo?.sourceUrl ?? ""}
+              alt={networkLogo?.altText ??
+                data?.networkTitle ??
+                "Provider Network"}
+              width={networkLogo?.mediaDetails?.width}
+              height={networkLogo?.mediaDetails?.height}
+            />
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="imgaebg content">
       <div class="container">
         <div
           class="main-imageheree"
-          set:html={page?.findProvider?.shortInfo ?? ""}
+          set:html={data?.networkDiscraption ?? ""}
         />
       </div>
     </div>
 
     <div class="container">
-      <div
-        class="full-content-data"
-        set:html={page?.findProvider?.searchInstructions ?? ""}
-      />
+      <div class="full-content-data">
+        <p>&nbsp;</p>
+
+        <h2>{data?.networkSubTitle}</h2>
+
+        <div set:html={data?.networkSubDiscraption ?? ""} />
+
+        <div class="bottom" set:html={data?.networkContactDiscraption ?? ""} />
+      </div>
     </div>
 
     <div class="pdf-flow"></div>
 
     <div class="container">
-      <div class="find-card" set:html={page?.findProvider?.memberId ?? ""} />
+      <div class="find-card">
+        <p>&nbsp;</p>
+
+        <div class="img-card">
+          <img
+            decoding="async"
+            src={memberSectionPicture?.sourceUrl ?? ""}
+            alt={memberSectionPicture?.altText ??
+              data?.memberTitle ??
+              "Member ID Card"}
+            width={memberSectionPicture?.mediaDetails?.width}
+            height={memberSectionPicture?.mediaDetails?.height}
+          />
+        </div>
+
+        <div class="crad-details-data">
+          <h2>{data?.memberTitle}</h2>
+
+          <div
+            class="text-center"
+            set:html={data?.memberSortDiscraption ?? ""}
+          />
+
+          <div set:html={data?.memberContactIno ?? ""} />
+        </div>
+      </div>
+
       <div class="logos">
         {
-          toArray(page?.findProvider?.memberIdProfile).map((curent) => {
-            return (
-              <div class="main-img">
-                {curent?.memberProfilePicture?.node?.sourceUrl && (
-                <img
-                  src={curent?.memberProfilePicture?.node?.sourceUrl}
-                  alt="YOUR MEMBER ID CARD"
-                />
-                )}
-              </div>
-            );
-          })
+          memberPhotos.map((item) => (
+            <div class="main-img">
+              <img
+                src={item?.memberListPicture?.node?.sourceUrl ?? ""}
+                alt={item?.memberListPicture?.node?.altText ?? "Member ID Card"}
+                width={item?.memberListPicture?.node?.mediaDetails?.width}
+                height={item?.memberListPicture?.node?.mediaDetails?.height}
+                loading="lazy"
+              />
+            </div>
+          ))
         }
       </div>
-      <p class="flow-center">
-        {page?.findProvider?.shortInfoMember}
-      </p>
+
+      <p class="flow-center">{data?.memberNote}</p>
     </div>
   </section>
 </BaseLayout>

@@ -15,6 +15,9 @@ const sortedSliders = [...toArray(Slider?.homeSliders?.nodes)]
   .sort((a, b) => (order[a?.title] ?? 99) - (order[b?.title] ?? 99));
 ---
 
+
+
+
 {
   sortedSliders.map((curent, index) => {
     return (

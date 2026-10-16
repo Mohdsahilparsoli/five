@@ -1,63 +1,251 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
-
-
-const Homequery = `query GetPage {
-  page(id: "form-finder", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
+const Homequery = `
+  query GetFormFinderPage {
+    page(id: "form-finder", idType: URI) {
       title
-      fullHead
-    }
-featuredImage {
-  node {
-    sourceUrl
-    mediaDetails {
-      file
-      filePath
-      height
-      width
+      uri
+      seo {
+        title
+        fullHead
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+      formFinder {
+        heroTitle
+        heroDescription
+        formTitle
+        formBoxTitle
+        boxTitle
+        enrollmentFormsLink {
+          link {
+            target
+            title
+            url
+          }
+        }
+        cancellationFormsTitle
+        cancellationFormsLink {
+          link {
+            target
+            title
+            url
+          }
+        }
+        creditCardFormTitle
+        creditCardFormLinkList {
+          creditCardFormLink {
+            target
+            title
+            url
+          }
+        }
+        authorizationFormTitle
+        authorizationFormList {
+          authorizationFormLink {
+            target
+            title
+            url
+          }
+        }
+      }
     }
   }
-}
-    formFinder {
-      formFinderInfo
-    }
-  }
-}`;
+`;
 
-let formfinder = await fetchAPI(Homequery);
-const page = formfinder?.page;
+const response = await fetchAPI(Homequery);
+const page = response?.page;
+const form = page?.formFinder ?? {};
+
+const heroTitle = form.heroTitle || page?.title || "Form Finder";
+const heroDescription =
+  form.heroDescription ||
+  "Find and download commonly used member applications and forms";
+
+const heroImage = page?.featuredImage?.node;
+
+const enrollmentForms = (form.enrollmentFormsLink ?? []).filter(
+  (item) => item?.link?.title && item?.link?.url,
+);
+
+const cancellationForms = (form.cancellationFormsLink ?? []).filter(
+  (item) => item?.link?.title && item?.link?.url,
+);
+
+const creditCardForms = (form.creditCardFormLinkList ?? [])
+  .map((item) => item?.creditCardFormLink)
+  .filter((item) => item?.title && item?.url);
+
+const authorizationForms = (form.authorizationFormList ?? [])
+  .map((item) => item?.authorizationFormLink)
+  .filter((item) => item?.title && item?.url);
+
+const safeTarget = (target) => (target === "_blank" ? "_blank" : undefined);
 ---
 
- <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  {/* Hero Section */}
   <section class="member-sec provider data-flow data-text">
     <div class="container">
       <div class="row gy-4 align-items-center">
-        <div class="col-lg-7" set:html={page?.content ?? ""} />
+        <div class="col-lg-7">
+          <div class="allabout-memberss fin-provide">
+            <h1 class="fs-60">{heroTitle}</h1>
+            <p>{heroDescription}</p>
+          </div>
+        </div>
+
         <div class="col-lg-5">
           <div class="image-members">
-            {page?.featuredImage?.node?.sourceUrl && (
-            <img
-              src={page?.featuredImage?.node?.sourceUrl}
-              alt={page?.title}
-              width={page?.featuredImage?.node?.width}
-              height={page?.featuredImage?.node?.height}
-            />
-            )}
+            {
+              heroImage?.sourceUrl && (
+                <img
+                  src={heroImage.sourceUrl}
+                  alt={heroImage.altText || heroTitle}
+                  width={heroImage.mediaDetails?.width}
+                  height={heroImage.mediaDetails?.height}
+                  loading="eager"
+                />
+              )
+            }
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  {/* Main Forms Section */}
   <section class="memberportal-secc bg-white flow">
-    <div set:html={page?.formFinder?.formFinderInfo ?? ""} />
+    <div class="container">
+      <div class="holderebg-here">
+        <div class="center-data">
+          {
+            form.formTitle && (
+              <h2 class="fs-40 text-blue-data" set:html={form.formTitle} />
+            )
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="main-finder-form">
+      <div class="container">
+        {form.formBoxTitle && <h2>{form.formBoxTitle}</h2>}
+
+        <div class="form-grid">
+          {
+            enrollmentForms.length > 0 && (
+              <div class="grid">
+                {form.boxTitle && <h3>{form.boxTitle}</h3>}
+                <ul>
+                  {enrollmentForms.map(({ link }) => (
+                    <li>
+                      <a
+                        href={link.url}
+                        target={safeTarget(link.target)}
+                        rel={
+                          safeTarget(link.target)
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                      >
+                        {link.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            cancellationForms.length > 0 && (
+              <div class="grid">
+                {form.cancellationFormsTitle && (
+                  <h3>{form.cancellationFormsTitle}</h3>
+                )}
+                <ul>
+                  {cancellationForms.map(({ link }) => (
+                    <li>
+                      <a
+                        href={link.url}
+                        target={safeTarget(link.target)}
+                        rel={
+                          safeTarget(link.target)
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                      >
+                        {link.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+
+    {/* Credit Card Forms */}
+    {
+      creditCardForms.length > 0 && (
+        <div class="credit-card-flow">
+          <div class="container">
+            {form.creditCardFormTitle && <h2>{form.creditCardFormTitle}</h2>}
+            <div class="flow">
+              {creditCardForms.map((link) => (
+                <a
+                  href={link.url}
+                  target={safeTarget(link.target)}
+                  rel={
+                    safeTarget(link.target) ? "noopener noreferrer" : undefined
+                  }
+                >
+                  {link.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    {/* Provider Authorization Forms */}
+    {
+      authorizationForms.length > 0 && (
+        <div class="credit-card-flow">
+          <div class="container">
+            {form.authorizationFormTitle && (
+              <h2>{form.authorizationFormTitle}</h2>
+            )}
+            <div class="flow">
+              {authorizationForms.map((link) => (
+                <a
+                  href={link.url}
+                  target={safeTarget(link.target)}
+                  rel={
+                    safeTarget(link.target) ? "noopener noreferrer" : undefined
+                  }
+                >
+                  {link.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
   </section>
 </BaseLayout>

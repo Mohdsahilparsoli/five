@@ -1,95 +1,228 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
-
-const Homequery = `query GetPage {
-  page(id: "teladoc", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
+const Homequery = `
+  query GetTeladocPage {
+    page(id: "/teladoc/", idType: URI) {
+      databaseId
       title
-      fullHead
-    }
-    teladoc {
-      appDownloadSection
-      teladocInfo {
-        teladocProfile {
-          node {
-            sourceUrl
+      uri
+
+      seo {
+        title
+        fullHead
+      }
+
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
           }
         }
-        teladocDescription
-        teladocTitle
       }
-    }
-    featuredImage {
-      node {
-        sourceUrl
-        mediaDetails {
-          file
-          filePath
-          height
-          width
+
+      teladoc {
+        heroTitle
+        heroDiscraption
+
+        heroLink {
+          url
+          title
+          target
+        }
+
+        teladocList {
+          teladocListIcon {
+            node {
+              sourceUrl
+              altText
+              mediaDetails {
+                width
+                height
+              }
+            }
+          }
+
+          teladocListTitle
+          teladocListDiscraption
+        }
+
+        downloadTitle
+
+        appStoreLink {
+          url
+          title
+          target
+        }
+
+        googlePlayLink {
+          url
+          title
+          target
         }
       }
     }
   }
-}`;
+`;
 
-let teladoc = await fetchAPI(Homequery);
-const page = teladoc?.page;
+const result = await fetchAPI(Homequery);
+const page = result?.page;
+const data = page?.teladoc;
+
+const heroImage = page?.featuredImage?.node;
+
+const heroTitle = data?.heroTitle || page?.title || "Teladoc";
+
+const heroDescription = data?.heroDiscraption || "";
+
+const heroLink = data?.heroLink;
+
+const teladocList = Array.isArray(data?.teladocList) ? data.teladocList : [];
+
+const downloadTitle = data?.downloadTitle || "";
+
+const appStoreLink = data?.appStoreLink;
+const googlePlayLink = data?.googlePlayLink;
+
+const seoTitle = pageTitle(page);
+const fullHead = page?.seo?.fullHead || "";
 ---
 
-     <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout title={seoTitle} fullHead={fullHead}>
   <section class="teladoc">
     <div class="container">
-      <div class="main-logo-teladoc">
-        <a href="https://www.teladochealth.com/" target="_blank">
-          {page?.featuredImage?.node?.sourceUrl && (
-          <img
-            src={page?.featuredImage?.node?.sourceUrl}
-            alt={page?.title}
-            height={page?.featuredImage?.node?.mediaDetails?.height}
-            width={page?.featuredImage?.node?.mediaDetails?.width}
-          />
-          )}</a
-        >
-      </div>
-      <div class="tedoc-titles" set:html={page?.content ?? ""} />
+      <!-- Hero Image -->
+      {
+        heroImage?.sourceUrl && (
+          <div class="main-logo-teladoc">
+            <a
+              href="https://www.teladochealth.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={heroImage.sourceUrl}
+                alt={heroImage.altText || heroTitle}
+                width={heroImage.mediaDetails?.width || 1754}
+                height={heroImage.mediaDetails?.height || 897}
+                loading="eager"
+              />
+            </a>
+          </div>
+        )
+      }
 
-      <div class="main-grid-flow">
+      <!-- Hero Content -->
+      <div class="tedoc-titles">
+        <h1 class="fs-30">{heroTitle}</h1>
+
+        {heroDescription && <p>{heroDescription}</p>}
+
         {
-          toArray(page?.teladoc?.teladocInfo).map((curent) => {
-            return (
-              <div class="grid-one">
-                <div class="icons">
-                  {curent?.teladocProfile?.node?.sourceUrl && (
-                  <img
-                    src={curent?.teladocProfile?.node?.sourceUrl}
-                    alt={curent?.teladocTitle}
-                    height="100"
-                    width="108"
-                  />
-                  )}
-                </div>
-                <div class="content">
-                  <h3>{curent?.teladocTitle}</h3>
-                  <p>{curent?.teladocDescription}</p>
-                </div>
-              </div>
-            );
-          })
+          heroLink?.url && (
+            <div class="min-btn">
+              <a
+                href={heroLink.url}
+                target={heroLink.target || "_self"}
+                rel={
+                  heroLink.target === "_blank"
+                    ? "noopener noreferrer"
+                    : undefined
+                }
+                class="c-btn"
+              >
+                {heroLink.title || "Sign in to Teladoc"}
+              </a>
+            </div>
+          )
         }
       </div>
-      <div
-        class="main-center-content"
-        set:html={page?.teladoc?.appDownloadSection ?? ""}
-      />
+
+      <!-- Teladoc Services -->
+      {
+        teladocList.length > 0 && (
+          <div class="main-grid-flow">
+            {teladocList.map((item) => {
+              const icon = item?.teladocListIcon?.node;
+
+              return (
+                <div class="grid-one">
+                  {icon?.sourceUrl && (
+                    <div class="icons">
+                      <img
+                        src={icon.sourceUrl}
+                        alt={
+                          icon.altText ||
+                          item.teladocListTitle ||
+                          "Teladoc service"
+                        }
+                        width={icon.mediaDetails?.width || 108}
+                        height={icon.mediaDetails?.height || 100}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  <div class="content">
+                    {item?.teladocListTitle && <h3>{item.teladocListTitle}</h3>}
+
+                    {item?.teladocListDiscraption && (
+                      <p>{item.teladocListDiscraption}</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
+      }
+
+      <!-- App Download Section -->
+      {
+        (downloadTitle || appStoreLink?.url || googlePlayLink?.url) && (
+          <div class="main-center-content">
+            {downloadTitle && <h3 class="fs-25">{downloadTitle}</h3>}
+
+            {(appStoreLink?.url || googlePlayLink?.url) && (
+              <div class="min-btn max-flex">
+                {appStoreLink?.url && (
+                  <a
+                    class="c-btn ios"
+                    href={appStoreLink.url}
+                    target={appStoreLink.target || "_self"}
+                    rel={
+                      appStoreLink.target === "_blank"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {appStoreLink.title || "Download on App Store"}
+                  </a>
+                )}
+
+                {googlePlayLink?.url && (
+                  <a
+                    class="c-btn android"
+                    href={googlePlayLink.url}
+                    target={googlePlayLink.target || "_self"}
+                    rel={
+                      googlePlayLink.target === "_blank"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {googlePlayLink.title || "Get it on Google Play"}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>

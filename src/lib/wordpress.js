@@ -13,7 +13,7 @@
 const WP_GRAPHQL_URL =
   import.meta.env.WP_GRAPHQL_URL ||
   (typeof process !== "undefined" ? process.env?.WP_GRAPHQL_URL : undefined) ||
-  "https://admin.fivepointsbenefitplans.com/graphql";
+  "https://test.admin.fivepointsbenefitplans.com/graphql";
 
 const CACHE_TTL_MS = 5_000; // chhota TTL = fresh content + fast repeat renders
 const TIMEOUT_MS = 8_000; // WP slow ho to function hang na ho
@@ -125,6 +125,30 @@ query GetLayout {
 }`;
 
 export const getLayoutData = () => fetchAPI(LAYOUT_QUERY);
+
+export const FOOTER_MENU = `query GetFooterMenu {
+  menu(id: "footer-menu", idType: SLUG) {
+    id
+    databaseId
+    name
+    slug
+    menuItems(first: 100) {
+      nodes {
+        id
+        databaseId
+        label
+        url
+        uri
+        parentId
+        target
+        cssClasses
+        description
+      }
+    }
+  }
+}`
+
+export const getfootermenu = () => fetchAPI(FOOTER_MENU);
 
 export const HOME_SLIDER_QUERY = `
 query GetHomeSliders {

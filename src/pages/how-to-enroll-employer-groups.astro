@@ -1,55 +1,149 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
 const Howtoenrol = `
-query GetPage {
-  page(id: "how-to-enroll-employer-groups", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
+  query GetEnrollEmployerGroups {
+    page(id: "how-to-enroll-employer-groups", idType: URI) {
       title
-      fullHead
-    }
-   
-    featuredImage {
-      node {
-        sourceUrl
-        mediaDetails {
-          file
-          filePath
-          height
-          width
+      slug
+      uri
+      seo {
+        title
+        fullHead
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+      employeerEnroll {
+        employerGroups
+        employerGroupsContactInfo
+        employerGroupsInfo
+        employerGroupsList
+        employerGroupsNote
+        employerGroupsPoints {
+          link {
+            target
+            title
+            url
+          }
         }
       }
     }
   }
-}
 `;
 
-let employerenroll = await fetchAPI(Howtoenrol);
-const page = employerenroll?.page;
+const response = await fetchAPI(Howtoenrol);
+const page = response?.page;
+const enroll = page?.employeerEnroll ?? {};
+const featuredImage = page?.featuredImage?.node;
+
+const employerGroupsPoints = (enroll.employerGroupsPoints ?? [])
+  .map((item) => item?.link)
+  .filter((link) => link?.title && link?.url);
+
+const safeTarget = (target) => (target === "_blank" ? "_blank" : undefined);
+
+const safeRel = (target) =>
+  target === "_blank" ? "noopener noreferrer" : undefined;
 ---
 
-   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
   <section class="contact-us-flow how-to-enrol">
     <div class="container">
-      <div class="main-img">
-        {page?.featuredImage?.node?.sourceUrl && (
-        <img
-          src={page?.featuredImage?.node?.sourceUrl}
-          alt={page?.title}
-          height={page?.featuredImage?.node?.mediaDetails?.height}
-          width={page?.featuredImage?.node?.mediaDetails?.width}
-        />
-        )}
+      {
+        featuredImage?.sourceUrl && (
+          <div class="main-img">
+            <img
+              src={featuredImage.sourceUrl}
+              alt={
+                featuredImage.altText || page?.title || "Employer enrollment"
+              }
+              height={featuredImage.mediaDetails?.height}
+              width={featuredImage.mediaDetails?.width}
+            />
+          </div>
+        )
+      }
+
+      <div class="main-titles-con">
+        <h1 class="fs-60">{page?.title || "How to Enroll Employer Groups"}</h1>
+
+        {
+          enroll.employerGroups && (
+            <div class="employer-text">
+              <div set:html={enroll.employerGroups} />
+            </div>
+          )
+        }
+
+        {
+          enroll.employerGroupsList && (
+            <div
+              class="employer-text red"
+              set:html={enroll.employerGroupsList}
+            />
+          )
+        }
+
+        {
+          employerGroupsPoints.length > 0 && (
+            <div class="main-list-flow">
+              <ul class="flow-list">
+                {employerGroupsPoints.map((link, index) => (
+                  <li>
+                    <a
+                      href={link.url}
+                      target={safeTarget(link.target)}
+                      rel={safeRel(link.target)}
+                      class:list={[
+                        "flow-link",
+                        index === 0 ? "purple" : index === 1 ? "green" : "blue",
+                      ]}
+                    >
+                      {link.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        {
+          enroll.employerGroupsInfo && (
+            <div
+              class="bottom-text text-flow"
+              set:html={enroll.employerGroupsInfo}
+            />
+          )
+        }
+
+        {
+          enroll.employerGroupsNote && (
+            <div
+              class="footer-titles text-data"
+              set:html={enroll.employerGroupsNote}
+            />
+          )
+        }
+
+        {
+          enroll.employerGroupsContactInfo && (
+            <div
+              class="title-info"
+              set:html={enroll.employerGroupsContactInfo}
+            />
+          )
+        }
       </div>
-      <div set:html={page?.content ?? ""} />
     </div>
   </section>
 </BaseLayout>

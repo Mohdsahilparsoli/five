@@ -1,191 +1,367 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
-
-
-const Homequery = `query GetPage {
+const Homequery = `
+query GetMemberLogin {
   page(id: "member-login", idType: URI) {
     title
     content
     slug
     uri
+
     seo {
       title
       fullHead
     }
-  }
-}`;
 
-let portal = await fetchAPI(Homequery);
+    featuredImage {
+      node {
+        sourceUrl
+        mediaDetails {
+          height
+          width
+        }
+      }
+    }
+
+    memberLogIn {
+      loginHeading
+
+      brandLogo {
+        node {
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+
+      loginLinkPage {
+        target
+        title
+        url
+      }
+
+      loginText
+
+      accountLinkSetup {
+        target
+        title
+        url
+      }
+
+      portalHeading
+
+      portalLoginList {
+        mainPortalLink {
+          target
+          title
+          url
+        }
+        portalLinkDiscraptions
+        portalMainHeading
+      }
+
+      healthHeading
+      healthDiscraptions
+
+      healthList {
+        healthIcon {
+          node {
+            sourceUrl
+            mediaDetails {
+              height
+              width
+            }
+          }
+        }
+        healthTitle
+      }
+
+      healthImage {
+        node {
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+
+      securityTitle
+      securityDiscraptions
+    }
+  }
+}
+`;
+
+const portal = await fetchAPI(Homequery);
+
 const page = portal?.page;
+const data = page?.memberLogIn;
+
+const heroImage =
+  page?.featuredImage?.node?.sourceUrl || "/assets/img/bg-img.webp";
 ---
 
 <BaseLayout
   title={pageTitle(page)}
   fullHead={page?.seo?.fullHead}
 >
+
+  <!-- ================= LOGIN HERO ================= -->
+
   <section
     class="portal-login"
-    style="background-image: url(/assets/img/bg-img.webp)"
+    style={`background-image: url(${heroImage})`}
   >
     <div class="container">
+
       <div class="login-form">
-        <!-- Logo Top -->
-        <div class="main-logo">
-          <img src="/assets/img/logo.png" alt="Points Healthcare" />
-        </div>
+
+        <!-- Dynamic Logo -->
+        {
+          data?.brandLogo?.node?.sourceUrl && (
+            <div class="main-logo">
+              <img
+                src={data.brandLogo.node.sourceUrl}
+                alt={page?.title || "Five Points Benefit Plans"}
+              />
+            </div>
+          )
+        }
 
         <div class="top-login-content">
-          <!-- Updated Title -->
-          <h1>Secure Member Log In</h1>
 
-          <div class="save">
-            <a
-              href="https://portal.fivepointsbenefitplans.com/login"
-              target="_blank"
-            >
-              Login to Your Account
-            </a>
-          </div>
+          <!-- Dynamic Heading -->
+          {data?.loginHeading && (
+            <h1>{data.loginHeading}</h1>
+          )}
+
+          <!-- Dynamic Login Button -->
+          {
+            data?.loginLinkPage?.url && (
+              <div class="save">
+                <a
+                  href={data.loginLinkPage.url}
+                  target={data.loginLinkPage.target || "_blank"}
+                  rel={data.loginLinkPage.target === "_blank"
+                    ? "noopener noreferrer"
+                    : undefined}
+                >
+                  {data.loginLinkPage.title}
+                </a>
+              </div>
+            )
+          }
 
           <div class="login-from">
+
             <div class="divider"></div>
 
-            <div class="bottom-tiles">
-              <span>Don’t have an account?</span>
-              <p>
-                Activate now to get the <br />
-                most of your policy.
-              </p>
-            </div>
+            <!-- Dynamic Login Text -->
+            {
+              data?.loginText && (
+                <div
+                  class="bottom-tiles"
+                  set:html={data.loginText}
+                />
+              )
+            }
 
-            <div class="activate-btn">
-              <a href="https://portal.fivepointsbenefitplans.com/setup-account" target="_blank">Activate Your Account</a>
-            </div>
+            <!-- Dynamic Activate Button -->
+            {
+              data?.accountLinkSetup?.url && (
+                <div class="activate-btn">
+                  <a
+                    href={data.accountLinkSetup.url}
+                    target={data.accountLinkSetup.target || "_blank"}
+                    rel={data.accountLinkSetup.target === "_blank"
+                      ? "noopener noreferrer"
+                      : undefined}
+                  >
+                    {data.accountLinkSetup.title}
+                  </a>
+                </div>
+              )
+            }
+
           </div>
         </div>
       </div>
     </div>
   </section>
+
+
+  <!-- ================= MEMBER PORTAL ================= -->
 
   <section class="login-section">
-    <div class="top-titles">
-      <span>Five Points Benefit Plans Member Portal</span>
-    </div>
+
+    <!-- Dynamic Portal Heading -->
+    {
+      data?.portalHeading && (
+        <div class="top-titles">
+          <span>{data.portalHeading}</span>
+        </div>
+      )
+    }
 
     <div class="container">
-      <div class="login-from">
-        <!-- Setup Account -->
-        <div class="login-flow">
-          <div class="content">
-            <h3>Setup Your Account</h3>
-            <p>
-              Enter Your Email Address to Begin Setup.
-              <br />
-              A Verification Code will be Sent to Your Email.
-              <br />
-              Please Check Your Inbox or Spam Folder.
-            </p>
-          </div>
 
-          <div class="save">
-            <a
-              href="https://portal.fivepointsbenefitplans.com/setup-account"
-              target="_blank"
-            >
-              Set Up Your Account
-            </a>
-          </div>
-        </div>
+      <!-- ================= PORTAL LOGIN CARDS ================= -->
 
-        <!-- Forgot Password -->
-        <div class="login-flow">
-          <div class="content">
-            <h3>Forgot Password</h3>
-            <p>
-              Enter Your Registered Email Address to Reset Your Password.
-            </p>
-          </div>
+      {
+        data?.portalLoginList?.length > 0 && (
+          <div class="login-from">
 
-          <div class="save">
-            <a
-              href=" https://portal.fivepointsbenefitplans.com/forgot-password"
-              target="_blank"
-            >
-              Reset Your Password
-            </a>
-          </div>
-        </div>
-      </div>
+            {
+              data.portalLoginList.map((item) => (
+                <div class="login-flow">
 
-      <!-- Info Section -->
+                  <div class="content">
+
+                    <!-- Setup Account / Forgot Password -->
+                    {
+                      item?.portalMainHeading && (
+                        <h3>{item.portalMainHeading}</h3>
+                      )
+                    }
+
+                    <!-- Description -->
+                    {
+                      item?.portalLinkDiscraptions && (
+                        <p>{item.portalLinkDiscraptions}</p>
+                      )
+                    }
+
+                  </div>
+
+                  <!-- Dynamic Button -->
+                  {
+                    item?.mainPortalLink?.url && (
+                      <div class="save">
+                        <a
+                          href={item.mainPortalLink.url}
+                          target={item.mainPortalLink.target || "_blank"}
+                          rel={item.mainPortalLink.target === "_blank"
+                            ? "noopener noreferrer"
+                            : undefined}
+                        >
+                          {item.mainPortalLink.title}
+                        </a>
+                      </div>
+                    )
+                  }
+
+                </div>
+              ))
+            }
+
+          </div>
+        )
+      }
+
+
+      <!-- ================= HEALTH PLAN ================= -->
+
       <div class="otheritles">
-        <h2>Log in to Manage Your Health Plan</h2>
-        <p>
-          Creating a provider account gives you access to your patient’s plan
-          information and other resources.
-        </p>
+
+        {
+          data?.healthHeading && (
+            <h2>{data.healthHeading}</h2>
+          )
+        }
+
+        {
+          data?.healthDiscraptions && (
+            <p>{data.healthDiscraptions}</p>
+          )
+        }
+
       </div>
 
-      <!-- Features Grid -->
-      <div class="main-grild-portal">
-        <div class="grid-data">
-          <span>Track Claims</span>
-          <img src="/assets/img/g1.png" alt="" />
-        </div>
 
-        <div class="grid-data">
-          <span>Get Your Digital ID Cards</span>
-          <img src="/assets/img/g2.webp" alt="" />
-        </div>
+      <!-- ================= HEALTH FEATURES ================= -->
 
-        <div class="grid-data">
-          <span>Check Your Benefits & Coverage</span>
-          <img src="/assets/img/g3.png" alt="" />
-        </div>
+      {
+        data?.healthList?.length > 0 && (
+          <div class="main-grild-portal">
 
-        <div class="grid-data">
-          <span>Find Providers In Your Network</span>
-          <img src="/assets/img/g4.png" alt="" />
-        </div>
+            {
+              data.healthList.map((item) => (
+                <div class="grid-data">
 
-        <div class="grid-data">
-          <span>Pay Your Premium (if applicable)</span>
-          <img src="/assets/img/g5.png" alt="" />
-        </div>
-      </div>
+                  {
+                    item?.healthTitle && (
+                      <span>{item.healthTitle}</span>
+                    )
+                  }
 
-      <!-- Middle Image -->
-      <div class="m-img">
-        <img src="/assets/img/m-img.png" alt="" />
-      </div>
+                  {
+                    item?.healthIcon?.node?.sourceUrl && (
+                      <img
+                        src={item.healthIcon.node.sourceUrl}
+                        alt={item.healthTitle || "Health Plan"}
+                      />
+                    )
+                  }
 
-      <!-- Security Section -->
+                </div>
+              ))
+            }
+
+          </div>
+        )
+      }
+
+
+      <!-- ================= MIDDLE IMAGE ================= -->
+
+      {
+        data?.healthImage?.node?.sourceUrl && (
+          <div class="m-img">
+
+            <img
+              src={data.healthImage.node.sourceUrl}
+              alt="Five Points Benefit Plans Health Plan"
+            />
+
+          </div>
+        )
+      }
+
+
+      <!-- ================= SECURITY ================= -->
+
       <div class="main-img-flow">
-        <div class="account-secuirty">
-          <h3 class="fs-35">Account Security</h3>
-          <p>
-            Your privacy is important and we follow state and federal
-            regulations
-          </p>
 
-          <ul>
-            <li>
-              Each member account requires a unique email address to protect
-              personal health information
-            </li>
-            <li>
-              Policy holders have access to family totals, their claims and
-              those of minors under 12
-            </li>
-            <li>
-              Children 12 and older and spouses are required to have their own
-              online account to see claim detail
-            </li>
-          </ul>
+        <div class="account-secuirty">
+
+          {
+            data?.securityTitle && (
+              <h3 class="fs-35">
+                {data.securityTitle}
+              </h3>
+            )
+          }
+
+          <!-- Dynamic Security Content -->
+          {
+            data?.securityDiscraptions && (
+              <div
+                class="security-content"
+                set:html={data.securityDiscraptions}
+              />
+            )
+          }
+
         </div>
+
       </div>
+
     </div>
   </section>
+
 </BaseLayout>

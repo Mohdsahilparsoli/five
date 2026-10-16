@@ -1,130 +1,506 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
-const Homequery = `query GetPage {
-  page(id: "member", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
+const Homequery = `
+  query GetPage {
+    page(id: "member", idType: URI) {
       title
-      fullHead
-    }
-    featuredImage {
-      node {
-        sourceUrl
-        mediaDetails {
-          
-          height
-          width
+      content
+      slug
+      uri
+
+      seo {
+        title
+        fullHead
+      }
+
+      featuredImage {
+        node {
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
         }
       }
-    }
-    memberPortal {
-      memberPortalInfo
-      findeCarePortal
-      optumrx {
-        link
-        subTitle
-        title
-        optumrxProfile {
+
+      mem {
+        memberHeroTitle
+        heroDiscraptions
+
+        portalTitle
+        portalProfile {
           node {
             sourceUrl
             mediaDetails {
-              file
-              filePath
               height
               width
             }
           }
         }
+
+        portalLink {
+          title
+          url
+          target
+        }
+
+        portalResetPassword {
+          title
+          url
+          target
+        }
+
+        portalInfoText
+
+        networkMainTitle
+        networkSubText
+
+        networkProfile {
+          node {
+            sourceUrl
+            mediaDetails {
+              height
+              width
+            }
+          }
+        }
+
+        networkInfoDetails
+
+        networkLink {
+          title
+          url
+          target
+        }
+
+        networkContactInfo
+        networkPhone
+        networkEmail
+
+        optumrxHeading
+
+        optumrxList {
+          title
+          description
+          icon {
+            node {
+              sourceUrl
+              mediaDetails {
+                height
+                width
+              }
+            }
+          }
+        }
+
+        optumrxLink {
+          title
+          url
+          target
+        }
+
+        formProfile {
+          node {
+            sourceUrl
+            mediaDetails {
+              height
+              width
+            }
+          }
+        }
+
+        formTitle
+        formSubTitle
+        formInfo
+
+        formLink {
+          title
+          url
+          target
+        }
       }
-      formFinderPortal
     }
   }
-}`;
+`;
 
-let member = await fetchAPI(Homequery);
-
+const member = await fetchAPI(Homequery);
 const page = member?.page;
-const items = toArray(page?.memberPortal?.optumrx);
+const data = page?.mem;
+
+const openInNewTab = (target) =>
+  target === "_blank"
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {};
 ---
 
-   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout
+  title={pageTitle(page)}
+  fullHead={page?.seo?.fullHead}
+>
+
+  <!-- ================= MEMBER HERO ================= -->
   <section class="member-sec">
     <div class="container">
       <div class="row gy-4 align-items-center">
-        <div class="col-lg-7" set:html={page?.content ?? ""} />
+
+        <div class="col-lg-7">
+          <div class="allabout-memberss">
+
+            <p>
+              <span class="section-tag">
+                {data?.memberHeroTitle}
+              </span>
+            </p>
+
+            <div set:html={data?.heroDiscraptions}></div>
+
+          </div>
+        </div>
+
         <div class="col-lg-5">
           <div class="image-members">
-            {page?.featuredImage?.node?.sourceUrl && (
-            <img
-              src={page?.featuredImage?.node?.sourceUrl}
-              alt={page?.title}
-              width={page?.featuredImage?.node?.mediaDetails?.width}
-              height={page?.featuredImage?.node?.mediaDetails?.height}
-            />
-            )}
+
+            {
+              page?.featuredImage?.node?.sourceUrl && (
+                <img
+                  src={page.featuredImage.node.sourceUrl}
+                  width={page.featuredImage.node.mediaDetails?.width}
+                  height={page.featuredImage.node.mediaDetails?.height}
+                  alt={data?.memberHeroTitle || page?.title || "Member"}
+                />
+              )
+            }
+
           </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= MEMBER PORTAL ================= -->
+  <section class="memberportal-secc">
+
+    <div class="container">
+      <div class="holderebg-here">
+        <div class="center-data">
+
+          <h2 class="fs-40 text-blue">
+            {data?.portalTitle}
+          </h2>
+
         </div>
       </div>
     </div>
-  </section>
-  <section
-    class="memberportal-secc"
-    set:html={page?.memberPortal?.memberPortalInfo ?? ""}
-  />
-  <section
-    class="finalcare-sec"
-    set:html={page?.memberPortal?.findeCarePortal ?? ""}
-  />
-  <section class="pharmacy">
+
+    <div class="imgaebg">
+      <div class="container">
+        <div class="main-imageheree">
+
+          {
+            data?.portalProfile?.node?.sourceUrl && (
+              <img
+                src={data.portalProfile.node.sourceUrl}
+                width={data.portalProfile.node.mediaDetails?.width}
+                height={data.portalProfile.node.mediaDetails?.height}
+                alt={data?.portalTitle || "Member Portal"}
+              />
+            )
+          }
+
+        </div>
+      </div>
+    </div>
+
     <div class="container">
+      <div class="bootm-childdata">
+
+        <div class="grid-btnssss">
+
+          <!-- Login Button -->
+          {
+            data?.portalLink?.url && (
+              <div class="databutton">
+                <a
+                  class="c-btn"
+                  href={data.portalLink.url}
+                  {...openInNewTab(data.portalLink.target)}
+                >
+                  {data.portalLink.title}
+                </a>
+              </div>
+            )
+          }
+
+          <!-- Reset Password Button -->
+          {
+            data?.portalResetPassword?.url && (
+              <div class="databutton">
+                <a
+                  class="c-btn"
+                  href={data.portalResetPassword.url}
+                  {...openInNewTab(data.portalResetPassword.target)}
+                >
+                  {data.portalResetPassword.title}
+                </a>
+              </div>
+            )
+          }
+
+        </div>
+
+        {
+          data?.portalInfoText && (
+            <div set:html={data.portalInfoText}></div>
+          )
+        }
+
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ================= NETWORK CARE ================= -->
+  <section class="finalcare-sec">
+
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+
+        <div class="col-lg-6">
+          <div class="finalcare-image">
+
+            {
+              data?.networkProfile?.node?.sourceUrl && (
+                <img
+                  src={data.networkProfile.node.sourceUrl}
+                  width={data.networkProfile.node.mediaDetails?.width}
+                  height={data.networkProfile.node.mediaDetails?.height}
+                  alt={data?.networkMainTitle || "Find In-Network Care"}
+                />
+              )
+            }
+
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="finalcare-details">
+
+            <h3 class="fs-40">
+              {data?.networkMainTitle}
+            </h3>
+
+            {
+              data?.networkSubText && (
+                <p>
+                  <strong>{data.networkSubText}</strong>
+                </p>
+              )
+            }
+
+            {
+              data?.networkInfoDetails && (
+                <p>
+                  {data.networkInfoDetails}
+                </p>
+              )
+            }
+
+            {
+              data?.networkLink?.url && (
+                <div class="univesral-button">
+                  <a
+                    class="c-btn"
+                    href={data.networkLink.url}
+                    {...openInNewTab(data.networkLink.target)}
+                  >
+                    {data.networkLink.title}
+                  </a>
+                </div>
+              )
+            }
+
+            {
+              data?.networkContactInfo && (
+                <p>
+                  {data.networkContactInfo}
+                </p>
+              )
+            }
+
+            {
+              data?.networkPhone && (
+                <p>
+                  <strong>Phone Number: </strong>
+                  <a href={`tel:${data.networkPhone}`}>
+                    {data.networkPhone}
+                  </a>
+                </p>
+              )
+            }
+
+            {
+              data?.networkEmail && (
+                <p class="email-flow-ok">
+                  <strong>Email Address: </strong>
+                  <a
+                    class="width"
+                    href={`mailto:${data.networkEmail}`}
+                  >
+                    {data.networkEmail}
+                  </a>
+                </p>
+              )
+            }
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ================= OPTUM RX ================= -->
+  <section class="pharmacy">
+
+    <div class="container">
+
       <div class="headings-flow">
         <h2 class="fs-40">
-          Get the Most from Your Pharmacy Coverage Through OptumRx
+          {data?.optumrxHeading}
         </h2>
       </div>
+
       <div class="grid-sytem">
+
         {
-          items.map((item) => (
+          data?.optumrxList?.map((item) => (
             <div class="grid-ph">
+
               <div class="ph-icons">
-                {item?.optumrxProfile?.node?.sourceUrl && (
-                <img
-                  src={item?.optumrxProfile?.node?.sourceUrl}
-                  alt={item?.title}
-                />
-                )}
+
+                {
+                  item?.icon?.node?.sourceUrl && (
+                    <img
+                      src={item.icon.node.sourceUrl}
+                      width={item.icon.node.mediaDetails?.width}
+                      height={item.icon.node.mediaDetails?.height}
+                      alt={item?.title || "OptumRx"}
+                    />
+                  )
+                }
+
               </div>
 
               <div class="ph-content">
-                <h3>{item?.title}</h3>
-                <p>{item?.subTitle}</p>
 
-               
+                <h3>
+                  {item?.title}
+                </h3>
+
+                {
+                  item?.description && (
+                    <p>
+                      {item.description}
+                    </p>
+                  )
+                }
+
               </div>
+
             </div>
           ))
         }
+
       </div>
-       <div class="univesral-button btn-f">
-                  <a href={"https://www.optumrx.com/"} target="_blank" class="c-btn">
-                    <span>OptumRx</span>
+
+      {
+        data?.optumrxLink?.url && (
+          <div class="univesral-button btn-f">
+            <a
+              href={data.optumrxLink.url}
+              class="c-btn"
+              {...openInNewTab(data.optumrxLink.target)}
+            >
+              <span>
+                {data.optumrxLink.title}
+              </span>
+            </a>
+          </div>
+        )
+      }
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FORM FINDER ================= -->
+  <section class="finalcare-sec">
+
+    <div class="container">
+      <div class="row gy-4 align-items-center">
+
+        <div class="col-lg-6">
+          <div class="finalcare-image">
+
+            {
+              data?.formProfile?.node?.sourceUrl && (
+                <img
+                  src={data.formProfile.node.sourceUrl}
+                  width={data.formProfile.node.mediaDetails?.width}
+                  height={data.formProfile.node.mediaDetails?.height}
+                  alt={data?.formTitle || "Resource for Members"}
+                />
+              )
+            }
+
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="finalcare-details">
+
+            <h2 class="fs-50">
+              {data?.formTitle}
+            </h2>
+
+            <h3 class="fs-40">
+              {data?.formSubTitle}
+            </h3>
+
+            {
+              data?.formInfo && (
+                <div set:html={data.formInfo}></div>
+              )
+            }
+
+            {
+              data?.formLink?.url && (
+                <div class="univesal-button">
+                  <a
+                    class="c-btn"
+                    href={data.formLink.url}
+                    {...openInNewTab(data.formLink.target)}
+                  >
+                    {data.formLink.title}
                   </a>
                 </div>
+              )
+            }
+
+          </div>
+        </div>
+
+      </div>
     </div>
+
   </section>
-  <section class="finalcare-sec">
-    <div class="container">
-      <div
-        class="row gy-4 align-items-center"
-        set:html={page?.memberPortal?.formFinderPortal ?? ""}
-      />
-    </div>
-  </section>
+
 </BaseLayout>

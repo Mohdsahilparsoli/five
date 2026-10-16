@@ -1,70 +1,151 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
 const Homequery = `query GetPage {
   page(id: "providers", idType: URI) {
     title
-    content
     slug
     uri
     seo {
       title
       fullHead
     }
+    providres {
+      providerHeroTitle
+      providerHeroDiscraption
+      providerLoginTitle
+      providerLoginPicture {
+        node {
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+      providerLoginLink {
+        target
+        title
+        url
+      }
+      providerResetLink {
+        target
+        title
+        url
+      }
+      providerLoginDiscraption
+      securePortalTitle
+      secureProviderDiscraption
+      networkTitle
+      networkParticipationList {
+        networkParticipationDiscraption
+        networkParticipationSubTitle
+        networkParticipationTitle
+      }
+      enrolledSmallTitle
+      enrolledMainTitle
+      enrolledDiscraption
+      enrolledLink {
+        target
+        title
+        url
+      }
+      enrolledPicture {
+        node {
+          sourceUrl
+          mediaDetails {
+            height
+            width
+          }
+        }
+      }
+    }
   }
 }`;
 
-let providers = await fetchAPI(Homequery);
-const page = providers?.page;
+const response = await fetchAPI(Homequery);
+const page = response?.page;
+const data = page?.providres;
+
+// Hero image is currently available through the WordPress Yoast OG image.
+const heroImage =
+  page?.seo?.fullHead?.match(
+    /<meta property="og:image" content="([^"]+)"/,
+  )?.[1] || "/assets/img/providerimg.webp";
+
+const providerImage =
+  data?.providerLoginPicture?.node?.sourceUrl || "/assets/img/wwww.webp";
+
+const enrolledImage =
+  data?.enrolledPicture?.node?.sourceUrl || "/assets/img/doctor.png";
+
+const loginLink = data?.providerLoginLink;
+const resetLink = data?.providerResetLink;
+const enrolledLink = data?.enrolledLink;
+
+const networkItems = data?.networkParticipationList ?? [];
+
+const secureDescription = data?.secureProviderDiscraption ?? "";
+
+const loginDescription = data?.providerLoginDiscraption ?? "";
 ---
 
-
-   <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+<BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
+  <!-- Hero Section -->
   <section class="member-sec provider pt">
     <div class="container">
-   
       <div class="row gy-4 align-items-center">
         <div class="col-lg-7">
           <div class="allabout-memberss">
-            <h1 class="fs-60">Welcome Providers</h1>
+            <h1 class="fs-60">
+              {data?.providerHeroTitle || "Welcome Providers"}
+            </h1>
+
             <p>
-              We're here to support you in caring for your patients, our
-              members.
+              {
+                data?.providerHeroDiscraption ||
+                  "We're here to support you in caring for your patients, our members."
+              }
             </p>
           </div>
         </div>
+
         <div class="col-lg-5">
           <div class="image-members">
             <img
-              src="/assets/img/providerimg.webp"
-              alt=""
-              width="615"
-              height="348"
+              src={heroImage}
+              alt={data?.providerHeroTitle || "Providers"}
+              width="560"
+              height="373"
             />
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Provider Portal Section -->
   <section class="memberportal-secc">
     <div class="container">
       <div class="holderebg-here">
         <div class="center-data">
-          <h2 class="fs-40 text-blue">Your Provider Portal</h2>
+          <h2 class="fs-40 text-blue">
+            {data?.providerLoginTitle || "Your Provider Portal"}
+          </h2>
         </div>
       </div>
     </div>
+
     <div class="imgaebg">
       <div class="container">
         <div class="main-imageheree">
           <img
-            src="/assets/img/wwww.webp"
-            alt=""
-            width="599"
-            height="498"
+            src={providerImage}
+            alt={data?.providerLoginTitle || "Provider Portal"}
+            width={data?.providerLoginPicture?.node?.mediaDetails?.width || 599}
+            height={data?.providerLoginPicture?.node?.mediaDetails?.height ||
+              437}
             loading="lazy"
           />
         </div>
@@ -75,132 +156,165 @@ const page = providers?.page;
       <div class="bootm-childdata">
         <div class="grid-btnssss">
           <div class="databutton">
-            <a href="https://portal.fivepointsbenefitplans.com/login" target="_blank" class="c-btn"
-              ><span>Login To Your Provider Portal</span></a
+            <a
+              href={loginLink?.url ||
+                "https://portal.fivepointsbenefitplans.com/login"}
+              target={loginLink?.target || "_blank"}
+              rel="noopener noreferrer"
+              class="c-btn"
             >
+              <span>
+                {loginLink?.title || "Login To Your Provider Portal"}
+              </span>
+            </a>
           </div>
+
           <div class="databutton">
-            <a href="https://portal.fivepointsbenefitplans.com/setup-account" class="c-btn" target="_blank"><span> First Time Login / Reset Password</span></a
+            <a
+              href={resetLink?.url ||
+                "https://portal.fivepointsbenefitplans.com/setup-account"}
+              target={resetLink?.target || "_blank"}
+              rel="noopener noreferrer"
+              class="c-btn"
             >
+              <span>
+                {resetLink?.title || "First Time Login / Reset Password"}
+              </span>
+            </a>
           </div>
         </div>
-        <p>
-          If you are a new user, please click on the
-          <strong>"First Time Login/Reset Password"</strong> button and the Five |
-          Points Benefit Plans care team will send you an automated email with your
-          account activation and | login information.
-        </p>
-        <p>
-          If you are a returning user, please click on the
-          <strong>"Login"</strong> button.
-        </p>
+
+        <div set:html={loginDescription} />
       </div>
     </div>
   </section>
 
+  <!-- Secure Provider Portal -->
   <section class="provider-login">
     <div class="container">
       <div class="main-titles-provider">
-        <h2 class="fs-30">Secure Provider Portal Login</h2>
-        <p>
-          Five Points Benefit Plans is committed to providing our participating
-          providers with the best tools possible to support their administrative
-          needs. We encourage our participating providers to take advantage of
-          our easy-to-use secure provider portal for fast resolution of routine
-          needs.
-        </p>
-        <p>
-          Our secure provider portal allows you to verify member eligibility,
-          view member benefit information, claims, and Explanation of Benefits
-          (EOBs) quickly and easily online.
-        </p>
-        <p>The provider portal can be used to:</p>
-        <ul>
-          <li>Verify member eligibility</li>
-          <li>View claims and claim status</li>
-          <li>View all covered patients and access their information</li>
-          <li>Update provider demographic information</li>
-        </ul>
-       
-    
+        <h2 class="fs-30">
+          {data?.securePortalTitle || "Secure Provider Portal Login"}
+        </h2>
+
+        <div set:html={secureDescription} />
       </div>
     </div>
   </section>
 
+  <!-- Network Participation -->
   <section class="participation-participation">
     <div class="container">
       <div class="main-titles-participation">
-        <h2 class="fs-40">Network Participation</h2>
-        <div class="main-tabs-flow">
-          <div class="list">
-            <ul>
-              <li class="active" data-tab="tab1">
-                Join Our Nationwide Network
-              </li>
-             
-            </ul>
-          </div>
-          <div class="main-tabs">
-            <div class="tab active" id="tab1">
-              <h3>Join Our Nationwide Network</h3>
-              <p>
-                When you become part of the Aetna/First Health Network, you'll
-                be a partner in our commitment to delivering access to quality,
-                cost-effective care for our members.
-              </p>
-              <a href="/network-participation" class="c-btn">How to apply</a>
+        <h2 class="fs-40">
+          {data?.networkTitle || "Network Participation"}
+        </h2>
+
+        {
+          networkItems.length > 0 && (
+            <div class="main-tabs-flow">
+              <div class="list">
+                <ul>
+                  {networkItems.map((item, index) => (
+                    <li
+                      class:list={{ active: index === 0 }}
+                      data-tab={`tab${index + 1}`}
+                    >
+                      {item.networkParticipationSubTitle ||
+                        item.networkParticipationTitle}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="main-tabs">
+                {networkItems.map((item, index) => (
+                  <div
+                    class:list={{ tab: true, active: index === 0 }}
+                    id={`tab${index + 1}`}
+                  >
+                    <h3>
+                      {item.networkParticipationTitle ||
+                        item.networkParticipationSubTitle}
+                    </h3>
+
+                    <p>{item.networkParticipationDiscraption}</p>
+
+                    <a href="/network-participation" class="c-btn">
+                      How to apply
+                    </a>
+                  </div>
+                ))}
+              </div>
             </div>
-           
-          </div>
-        </div>
+          )
+        }
       </div>
     </div>
   </section>
 
+  <!-- Enrolled Section -->
   <section class="enroll">
     <div class="container">
       <div class="enroll-flex">
         <div class="enroll-img">
-          <img src="/assets/img/doctor.png" alt="" />
+          <img
+            src={enrolledImage}
+            alt={data?.enrolledMainTitle || "Provider Enrollment"}
+            width={data?.enrolledPicture?.node?.mediaDetails?.width || 1536}
+            height={data?.enrolledPicture?.node?.mediaDetails?.height || 1024}
+            loading="lazy"
+          />
         </div>
+
         <div class="enroll-content">
-          <span>Once You Are Enrolled</span>
-          <h2 class="fs-60">Claims, Eligibility, and Pre- Authorizations</h2>
+          <span>
+            {data?.enrolledSmallTitle || "Once You Are Enrolled"}
+          </span>
+
+          <h2 class="fs-60">
+            {
+              data?.enrolledMainTitle ||
+                "Claims, Eligibility, and Pre- Authorizations"
+            }
+          </h2>
+
           <p>
-            Login to our provider portal to help you view patient eligibility
-            and  coverage: and manage claims.
+            {
+              data?.enrolledDiscraption ||
+                "Login to our provider portal to help you view patient eligibility and coverage and manage claims."
+            }
           </p>
-          <a href="/provider-login" class="c-btn">Claims and Eligibility</a>
+
+          <a
+            href={enrolledLink?.url || "/provider-login"}
+            target={enrolledLink?.target || undefined}
+            rel={enrolledLink?.target === "_blank"
+              ? "noopener noreferrer"
+              : undefined}
+            class="c-btn"
+          >
+            {enrolledLink?.title || "Claims and Eligibility"}
+          </a>
         </div>
       </div>
     </div>
   </section>
-    <!-- PAGE SPECIFIC SCRIPTS -->
+
+  <!-- Page Specific Scripts -->
   <Fragment slot="scripts">
     <script is:inline>
-     $(document).ready(function(){
+      $(document).ready(function () {
+        $(".main-tabs-flow .list li").on("click", function () {
+          $(".main-tabs-flow .list li").removeClass("active");
+          $(this).addClass("active");
 
-  $('.main-tabs-flow .list li').click(function(){
+          const tabID = $(this).attr("data-tab");
 
-    // remove active from all li
-    $('.main-tabs-flow .list li').removeClass('active');
-
-    // add active to clicked li
-    $(this).addClass('active');
-
-    // get data-tab value
-    var tabID = $(this).attr('data-tab');
-
-    // remove active from all tabs
-    $('.main-tabs-flow .main-tabs .tab').removeClass('active');
-
-    // add active to matching tab
-    $('#' + tabID).addClass('active');
-
-  });
-
-});
+          $(".main-tabs-flow .main-tabs .tab").removeClass("active");
+          $("#" + tabID).addClass("active");
+        });
+      });
     </script>
-
   </Fragment>
 </BaseLayout>

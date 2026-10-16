@@ -1,71 +1,199 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
 const Contactinfo = `
-query GetPage {
-  page(id: "contact-details", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
-      title
-      fullHead
-    }
-    contactInfo {
-      contactDetails {
-        contactDetail
-      }
-    }
-    featuredImage {
-      node {
-        sourceUrl
-        mediaDetails {
-          height
-          width
+  query GetPage {
+    page(id: "contact-details", idType: URI) {
+
+      contactInfo {
+        title
+        subTitle
+        infoTitle
+        infoSubTitle
+
+        contactLabel {
+          contactProfile {
+            node {
+              sourceUrl
+              altText
+              mediaDetails {
+                width
+                height
+              }
+            }
+          }
+
+          title
+          contactText
         }
+      }
+
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+
+      seo {
+        fullHead
       }
     }
   }
-}
 `;
 
-let contactinfo = await fetchAPI(Contactinfo);
+const contactinfo = await fetchAPI(Contactinfo);
+
 const page = contactinfo?.page;
+
+const contactInfo = page?.contactInfo;
+
+const contactOptions =
+  contactInfo?.contactLabel ?? [];
+
+const featuredImage =
+  page?.featuredImage?.node;
 ---
 
+<BaseLayout
+  title="Contact Us | 5 POINTS HEALTH"
+  fullHead={page?.seo?.fullHead}
+>
 
-  <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
   <section class="contact-us-flow">
+
     <div class="container">
-      <!-- IMAGE -->
+
+      <!-- =========================
+           FEATURED IMAGE
+      ========================== -->
+
       <div class="main-img">
-        {page?.featuredImage?.node?.sourceUrl && (
-        <img
-          src={page?.featuredImage?.node?.sourceUrl}
-          alt={page?.title}
-        />
+        {featuredImage?.sourceUrl && (
+          <img
+            src={featuredImage.sourceUrl}
+            alt={
+              featuredImage?.altText ||
+              contactInfo?.title ||
+              "Contact details"
+            }
+            width={featuredImage?.mediaDetails?.width}
+            height={featuredImage?.mediaDetails?.height}
+          />
         )}
       </div>
 
-      <!-- CONTENT -->
-      <div class="main-titles-con" set:html={page?.content ?? ""} />
 
-      <!-- CONTACT OPTIONS -->
-      <div class="contact-info-flows">
-        <h3 class="fs-30">Contact Options</h3>
+      <!-- =========================
+           CONTACT INTRO
+      ========================== -->
 
-        <div class="row-flow-contact">
-          {
-            toArray(page?.contactInfo?.contactDetails).map((item) => (
-              <div set:html={item?.contactDetail ?? ""} />
-            ))
-          }
-        </div>
+      <div class="main-titles-con">
+
+        {contactInfo?.title && (
+          <h1 class="fs-60">
+            {contactInfo.title}
+          </h1>
+        )}
+
+        {contactInfo?.subTitle && (
+          <p class="sub-pera">
+            {contactInfo.subTitle}
+          </p>
+        )}
+
+        {contactInfo?.infoTitle && (
+          <h2 class="fs-30">
+            {contactInfo.infoTitle}
+          </h2>
+        )}
+
+        {contactInfo?.infoSubTitle && (
+          <p class="peara-flow">
+            {contactInfo.infoSubTitle}
+          </p>
+        )}
+
       </div>
+
+
+      <!-- =========================
+           CONTACT OPTIONS
+      ========================== -->
+
+      {contactOptions.length > 0 && (
+        <div class="contact-info-flows">
+
+          <h3 class="fs-30">
+            Contact Options
+          </h3>
+
+
+          <div class="row-flow-contact">
+
+            {
+              contactOptions.map((contact) => {
+
+                const image =
+                  contact?.contactProfile?.node;
+
+                return (
+                  <div class="contact-info-flow-data">
+
+                    <!-- ICON -->
+
+                    {image?.sourceUrl && (
+                      <div class="icons">
+
+                        <img
+                          src={image.sourceUrl}
+                          alt={
+                            image?.altText ||
+                            contact?.title ||
+                            ""
+                          }
+                          width={image?.mediaDetails?.width}
+                          height={image?.mediaDetails?.height}
+                        />
+
+                      </div>
+                    )}
+
+
+                    <!-- TITLE -->
+
+                    {contact?.title && (
+                      <h3>
+                        {contact.title}
+                      </h3>
+                    )}
+
+
+                    <!-- CONTACT CONTENT -->
+
+                    {contact?.contactText && (
+                      <div
+                        set:html={contact.contactText}
+                      />
+                    )}
+
+                  </div>
+                );
+              })
+            }
+
+          </div>
+
+        </div>
+      )}
+
     </div>
+
   </section>
+
 </BaseLayout>

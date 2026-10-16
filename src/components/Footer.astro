@@ -1,9 +1,10 @@
 ---
-import { getLayoutData, toArray } from "../lib/wordpress";
+import { getLayoutData, toArray, getfootermenu } from "../lib/wordpress";
 import Googlereview from "./Googlereview.astro";
 
 /* Header ke saath shared data — koi extra API call nahi */
 const data = await getLayoutData();
+const footer = await getfootermenu();
 const items = toArray(data?.menu?.menuItems?.nodes).filter(Boolean);
 const footerWidget = data?.mainSidebar ?? "";
 
@@ -17,7 +18,7 @@ for (const item of items) {
 
 /* children finder */
 const getChildren = (parentId) =>
-  parentId ? childrenMap.get(parentId) ?? [] : [];
+  parentId ? (childrenMap.get(parentId) ?? []) : [];
 
 /* menu finder */
 const getItem = (name) =>
@@ -58,7 +59,7 @@ const tele = getItem("Telemedicine");
 ---
 
 <!-- Google review  -->
-<Googlereview/>
+<Googlereview />
 <footer class="custom-footer">
   <div class="container">
     <div class="menu-list-all">
@@ -102,22 +103,35 @@ const tele = getItem("Telemedicine");
       </div>
     </div>
   </div>
-  <div set:html={footerWidget}></div>
-  
+
+  <div class="bootm-ligals">
+    <div class="container">
+      <ul>
+        {
+          footer?.menu?.menuItems?.nodes?.map((item) => (
+            <li>
+              <a href={item.uri}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div set:html={footerWidget} />
 </footer>
 <div class="margin-bottom"></div>
 <div class="bootm-strip">
-    <span>Ready to Choose Your Plan? </span>
-    <a href="tel:915.803.4198">915.803.4198</a>
-  </div>
+  <span>Ready to Choose Your Plan? </span>
+  <a href="tel:915.803.4198">915.803.4198</a>
+</div>
 
 <div id="google_translate_element" style="display:none;"></div>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-      is:inline></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+  is:inline></script>
 
-     
-<script  is:inline>
+<script is:inline>
   let googleTranslateLoaded = false;
 
   function loadGoogleTranslate() {
@@ -138,7 +152,7 @@ const tele = getItem("Telemedicine");
         pageLanguage: "en",
         includedLanguages: "en,es,zh-CN,ko,ja,it,fr,de,hi,mr,ta,te,bn,",
       },
-      "google_translate_element"
+      "google_translate_element",
     );
 
     applySavedLanguage();
@@ -178,49 +192,44 @@ const tele = getItem("Telemedicine");
     });
   });
 
+  // $(document).ready(function () {
+  //   // Menu toggle
+  //   $(".menu-icon").on("click", function () {
+  //       $(".all-here").slideToggle();
+  //   });
 
-// $(document).ready(function () {
-//   // Menu toggle
-//   $(".menu-icon").on("click", function () {
-//       $(".all-here").slideToggle();
-//   });
+  //   // Mobile menu
+  //   if ($(window).innerWidth() <= 1200) {
 
-//   // Mobile menu
-//   if ($(window).innerWidth() <= 1200) {
+  //       $(".sub-menu").hide();
 
-//       $(".sub-menu").hide();
+  //       $(".menu-item-has-children").on("click", function (e) {
+  //           e.stopPropagation();
+  //           $(this).children(".sub-menu").slideToggle();
+  //       });
 
-//       $(".menu-item-has-children").on("click", function (e) {
-//           e.stopPropagation();
-//           $(this).children(".sub-menu").slideToggle();
-//       });
+  //       // prevent default inside submenu
+  //       // $(".sub-menu").on("click", function (e) {
+  //       //     // e.preventDefault();
+  //       //     // e.stopPropagation();
+  //       // });
+  //   }
+  // });
 
-//       // prevent default inside submenu
-//       // $(".sub-menu").on("click", function (e) {
-//       //     // e.preventDefault();
-//       //     // e.stopPropagation();
-//       // });
-//   }
-// });
-
-$(document).ready(function () {
-  $(".menu-icon").on("click", function () {
-    $(".all-here").slideToggle();
-  });
-
-  if ($(window).innerWidth() <= 1200) {
-    $(".sub-menu").hide();
-
-    $(".menu-item-has-children").on("click", function (e) {
-      // 🔥 agar click anchor pe hua hai → kuch mat karo
-      if ($(e.target).is("a")) return;
-
-      $(this).children(".sub-menu").slideToggle();
+  $(document).ready(function () {
+    $(".menu-icon").on("click", function () {
+      $(".all-here").slideToggle();
     });
-  }
-});
+
+    if ($(window).innerWidth() <= 1200) {
+      $(".sub-menu").hide();
+
+      $(".menu-item-has-children").on("click", function (e) {
+        // 🔥 agar click anchor pe hua hai → kuch mat karo
+        if ($(e.target).is("a")) return;
+
+        $(this).children(".sub-menu").slideToggle();
+      });
+    }
+  });
 </script>
-
-
-
-

@@ -1,75 +1,340 @@
+
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAPI, pageTitle } from "../lib/wordpress";
 
-import { fetchAPI, pageTitle, toArray } from "../lib/wordpress";
-
-
-const Homequery = `query GetPage {
-  page(id: "optumrx", idType: URI) {
-    title
-    content
-    slug
-    uri
-     seo {
+const Homequery = `
+  query GetOptumRxPage {
+    page(id: "/optumrx/", idType: URI) {
+      databaseId
       title
-      fullHead
-    }
-        optumrx {
-      pharmacyRxInfo
-      aboutOptumrx
-      optumrxFeatures
-    }
-    featuredImage {
-      node {
-       sourceUrl
-        mediaDetails {
-          file
-          filePath
-          height
-          width
+      uri
+
+      seo {
+        title
+        fullHead
+      }
+
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
+          }
+        }
+      }
+
+      pharmacyRx {
+        heroTitle
+        heroDiscraption
+        smallTitle
+        mainTitle
+
+        optumrxList {
+          optumrxListIcon {
+            node {
+              sourceUrl
+              mediaDetails {
+                height
+                width
+              }
+            }
+          }
+          optumrxListDiscraption
+          optumrxListTitle
+        }
+
+        optumRxBackgroundPicture {
+          node {
+            sourceUrl
+            mediaDetails {
+              height
+              width
+            }
+          }
+        }
+
+        optumRxTitle
+        optumRxRegisterDiscraption
+
+        registerLink {
+          url
+          title
+          target
+        }
+
+        optumRxAccount
+        optumrxFeatureTitle
+        optumrxFeaturesLeftBox
+        optumrxFeaturesRightBox
+        optumrxFeaturesBottomTitle
+
+        appStoreLink {
+          url
+          title
+          target
+        }
+
+        googlePlayLink {
+          url
+          title
+          target
         }
       }
     }
   }
-}`;
+`;
 
-let optumrx = await fetchAPI(Homequery);
-const page = optumrx?.page;
+  const result = await fetchAPI(Homequery);
+  const page = result?.page;
+  const data = page?.pharmacyRx;
+
+  const heroImage = page?.featuredImage?.node;
+  const backgroundImage = data?.optumRxBackgroundPicture?.node;
+
+  const homeItems = Array.isArray(data?.optumrxList)
+    ? data.optumrxList
+    : [];
+
+  const heroTitle = data?.heroTitle || page?.title || "Pharmacy & Rx";
+  const heroDescription = data?.heroDiscraption || "";
+
+  const homeSmallTitle = data?.smallTitle || "";
+  const homeMainTitle = data?.mainTitle || "";
+
+  const welcomeTitle = data?.optumRxTitle || "";
+  const welcomeDescription = data?.optumRxRegisterDiscraption || "";
+  const registerLink = data?.registerLink;
+  const accountText = data?.optumRxAccount || "";
+
+  const featuresTitle = data?.optumrxFeatureTitle || "";
+  const leftFeatures = data?.optumrxFeaturesLeftBox || "";
+  const rightFeatures = data?.optumrxFeaturesRightBox || "";
+  const bottomFeaturesTitle =
+    data?.optumrxFeaturesBottomTitle || "";
+
+  const appStoreLink = data?.appStoreLink;
+  const googlePlayLink = data?.googlePlayLink;
+
+  const seoTitle = pageTitle(page);
+  const fullHead = page?.seo?.fullHead || "";
 ---
 
-     <BaseLayout title={pageTitle(page)} fullHead={page?.seo?.fullHead}>
-  <section class="member-sec" >
-    <div class="container">
-      <div class="row gy-4 align-items-center">
-        <div class="col-lg-7">
-          <div class="allabout-memberss flow" set:html={page?.content ?? ""} />
-        </div>
-        <div class="col-lg-5">
-          <div class="image-members">
-            <a href="https://www.optumrx.com/" target="_blank">
-              {page?.featuredImage?.node?.sourceUrl && (
-              <img
-                src={page?.featuredImage?.node?.sourceUrl}
-                alt={page?.title}
-                width={page?.featuredImage?.node?.mediaDetails?.width}
-                height={page?.featuredImage?.node?.mediaDetails?.height}
-              />
-              )}</a
-            >
+<BaseLayout title={seoTitle} fullHead={fullHead}>
+  {page && (
+    <>
+      <!-- Hero Section -->
+      <section class="member-sec">
+        <div class="container">
+          <div class="row gy-4 align-items-center">
+            <div class="col-lg-7">
+              <div class="allabout-memberss flow">
+                <h1 class="heading-text">{heroTitle}</h1>
+
+                {heroDescription && (
+                  <p>{heroDescription}</p>
+                )}
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              {heroImage?.sourceUrl && (
+                <div class="image-members">
+                  <a
+                    href="https://www.optumrx.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={heroImage.sourceUrl}
+                      alt={heroImage.altText || "OptumRx"}
+                      width={heroImage.mediaDetails?.width || 560}
+                      height={heroImage.mediaDetails?.height || 280}
+                      loading="eager"
+                      fetchpriority="high"
+                    />
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-  <section class="memberportal-secc" >
-    <div class="container" set:html={page?.optumrx?.pharmacyRxInfo ?? ""} />
-  </section>
+      </section>
 
-  <section class="optum-rx-welcome" style="background-image: url('/assets/img/back-backgound-otm.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;" >
-    <div class="container" set:html={page?.optumrx?.aboutOptumrx ?? ""} />
-  </section>
+      <!-- OptumRx Home Section -->
+      <section class="memberportal-secc">
+        <div class="container">
+          <div class="container">
+            <div class="main-titles-flow-data">
+              {homeSmallTitle && (
+                <h3 class="fs-20">{homeSmallTitle}</h3>
+              )}
 
-  <section class="optumax-fe">
-    <div class="container" set:html={page?.optumrx?.optumrxFeatures ?? ""} />
-  </section>
+              {homeMainTitle && (
+                <h2 class="fs-30">{homeMainTitle}</h2>
+              )}
+            </div>
+
+            <div class="main-titles-rx">
+              {homeItems.map((item, index) => {
+                const icon = item?.optumrxListIcon?.node;
+
+                return (
+                  <div
+                    class={index === 0 ? "lef-grid" : "right-grid"}
+                   
+                  >
+                    <div class="rx-data-img">
+                      <div class="img">
+                        {icon?.sourceUrl && (
+                          <img
+                            src={icon.sourceUrl}
+                            alt=""
+                            width={icon.mediaDetails?.width || 100}
+                            height={icon.mediaDetails?.height || 96}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        )}
+                      </div>
+
+                      <div>
+                        {item?.optumrxListTitle && (
+                          <h3>{item.optumrxListTitle}</h3>
+                        )}
+
+                        {item?.optumrxListDiscraption && (
+                          <div
+                            set:html={item.optumrxListDiscraption}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OptumRx Welcome Section -->
+      <section
+        class="optum-rx-welcome"
+        style={
+          backgroundImage?.sourceUrl
+            ? `background-image: url("${backgroundImage.sourceUrl}"); background-size: cover; background-position: center; background-repeat: no-repeat;`
+            : undefined
+        }
+      >
+        <div class="container">
+          <div class="mian-titles">
+            {welcomeTitle && (
+              <h2 class="fs-60">{welcomeTitle}</h2>
+            )}
+
+            {welcomeDescription && (
+              <p class="sub-titles">
+                {welcomeDescription}
+              </p>
+            )}
+
+            <div class="links">
+              {registerLink?.url && (
+                <p>
+                  <a
+                    class="c-btn"
+                    href={registerLink.url}
+                    target={registerLink.target || undefined}
+                    rel={
+                      registerLink.target === "_blank"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {registerLink.title || "Sign in"}
+                  </a>
+                </p>
+              )}
+
+              {accountText && (
+                <p set:html={accountText} />
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OptumRx Features Section -->
+      <section class="optumax-fe">
+        <div class="container">
+          <div class="main-data">
+            <div class="fe-titles">
+              {featuresTitle && (
+                <h2 class="fs-35">{featuresTitle}</h2>
+              )}
+            </div>
+
+            <div class="features-listing-flow">
+              {leftFeatures && (
+                <div
+                  class="features-listing"
+                  set:html={leftFeatures}
+                />
+              )}
+
+              {rightFeatures && (
+                <div
+                  class="features-listing"
+                  set:html={rightFeatures}
+                />
+              )}
+            </div>
+
+            <div class="main-center-content">
+              {bottomFeaturesTitle && (
+                <h3 class="fs-25">
+                  {bottomFeaturesTitle}
+                </h3>
+              )}
+
+              <div class="min-btn max-flex">
+                {appStoreLink?.url && (
+                  <a
+                    class="c-btn ios"
+                    href={appStoreLink.url}
+                    target={appStoreLink.target || undefined}
+                    rel={
+                      appStoreLink.target === "_blank"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {appStoreLink.title || "Download on App Store"}
+                  </a>
+                )}
+
+                {googlePlayLink?.url && (
+                  <a
+                    class="c-btn android"
+                    href={googlePlayLink.url}
+                    target={googlePlayLink.target || undefined}
+                    rel={
+                      googlePlayLink.target === "_blank"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {googlePlayLink.title || "Get it on Google Play"}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
 </BaseLayout>

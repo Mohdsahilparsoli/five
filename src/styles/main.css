@@ -619,7 +619,7 @@ select {
     padding: 50px 0px;
   }
 
- 
+
 
 }
 
@@ -1085,9 +1085,10 @@ ul {
   padding: 0
 }
 
-.mobile-grid{
+.mobile-grid {
   display: none;
 }
+
 .bootm-ligals ul li:hover a,
 .c-btn,
 .c-btn:hover,
@@ -2053,6 +2054,7 @@ span.progress-bar::after {
   height: 670px;
   justify-content: center;
 }
+
 section.health-plans .swiper-wrapper {
   justify-content: center;
 }
@@ -2175,12 +2177,13 @@ section.in-banner .fs-30 {
 }
 
 .contact-info-flow h3,
-.team-content h2 {
+.team-content h1 {
   font-size: var(--fs-30);
   line-height: var(--lh-40);
   color: #1f6f80;
   font-style: italic
 }
+
 
 .full-titles {
   width: 100%;
@@ -2263,10 +2266,19 @@ section.in-banner .fs-30 {
   color: #1f6f80
 }
 
-.team-content h2 {
-  text-align: center;
+.team-content h1 {
+  text-align: left;
   font-weight: 600;
-  padding-bottom: 0
+  padding-bottom: 10px
+}
+
+.team-content h2 {
+  color: #1f6f80;
+  text-align: justify;
+  font-weight: 500;
+  padding-bottom: 12px;
+  font-style: italic;
+  font-size: var(--fs-25);
 }
 
 .team-content b {
@@ -3814,17 +3826,17 @@ section.login-section .save input[type=submit] {
   padding-top: 20px
 }
 
-.account-secuirty ul.list-item li,
-.account-secuirty ul.list-item {
+.account-secuirty ul li,
+.account-secuirty ul {
   list-style: disc;
 }
 
-.account-secuirty ul.list-item {
+.account-secuirty ul {
   margin-left: 70px;
   padding-top: 0px;
 }
 
-.account-secuirty ul.list-item li {
+.account-secuirty ul li {
   padding: 10px 0px;
 }
 
@@ -4972,6 +4984,22 @@ section.member-sec .allabout-memberss.flow p {
 
 }
 
+section.contact-us-flow.how-to-enrol .title-info {
+  text-align: center;
+  padding-top: 30px;
+}
+
+section.contact-us-flow.how-to-enrol .title-info p {
+  color: #1f6f80;
+  font-weight: 700;
+  margin-top: 35px;
+  font-size: var(--fs-20);
+  font-style: normal;
+  line-height: var(--lh-30);
+}
+section.contact-us-flow.how-to-enrol .bottom-text.text-flow p{
+  text-align: center;
+}
 .contact-info-flow-data.width b a {
   display: block;
 }
@@ -5059,7 +5087,7 @@ section.steps-data {
 
 section.steps-data .fs-50 {
   text-align: center;
-    color: #195173;
+  color: #195173;
   font-weight: 700;
 }
 
@@ -5145,7 +5173,8 @@ section.steps-data .fs-50 {
 .full-deatils .info a:hover {
   color: #1f6f80;
 }
-section.steps-data .main-title{
+
+section.steps-data .main-title {
   padding: 0px;
 }
 
@@ -5728,20 +5757,25 @@ section.steps-data .main-title{
   .heading-text {
     margin-bottom: 8px;
   }
+
   section.member-sec h1 b,
-  section.member-sec h1{
+  section.member-sec h1 {
     margin-bottom: 5px;
   }
- .second-title {
+
+  .second-title {
     padding-bottom: 50px;
   }
-  section.steps-data{
+
+  section.steps-data {
     padding: 40px 0px;
   }
-  .main-flow-data-step{
+
+  .main-flow-data-step {
     padding-top: 80px;
   }
-  .steps-data .full-deatils{
+
+  .steps-data .full-deatils {
     padding: 50px 0px;
   }
 }
@@ -6182,13 +6216,15 @@ section.steps-data .main-title{
     padding: 60px 0px;
   }
 
-    section.steps-data{
+  section.steps-data {
     padding: 30px 0px;
   }
-    .main-flow-data-step{
+
+  .main-flow-data-step {
     padding-top: 50px;
   }
-    .steps-data .full-deatils{
+
+  .steps-data .full-deatils {
     padding: 40px 0px;
   }
 }
@@ -6611,39 +6647,48 @@ section.steps-data .main-title{
     position: static;
     z-index: 0;
   }
-  section.member-sec h1{
+
+  section.member-sec h1 {
     line-height: normal;
   }
-      .main-flow-data-step{
+
+  .main-flow-data-step {
     padding-top: 30px;
   }
-  .main-flow-data-step{
+
+  .main-flow-data-step {
     flex-direction: column-reverse;
     gap: 15px;
   }
-  .right-fow h3{
+
+  .right-fow h3 {
     margin-bottom: 10px;
   }
-  .right-fow img{
+
+  .right-fow img {
     margin: 10px 0px;
   }
-  .right-fow .content h3 b{
+
+  .right-fow .content h3 b {
     font-size: 14px;
   }
-  .right-fow .content h3 b{
+
+  .right-fow .content h3 b {
     width: 30px;
     height: 30px;
   }
-  .mobile-menu{
+
+  .mobile-menu {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     max-width: 100%;
   }
+
   .main-menu-data,
   .mobile-grid .main-menu-data,
-  .mobile-grid{
+  .mobile-grid {
     display: block;
     width: fit-content;
   }
@@ -7087,25 +7132,30 @@ section.steps-data .main-title{
   li.menu-item-has-children {
     position: relative;
   }
-.right-fow .content h3 b{
-  width: 25px;
-  height: 25px;
-  font-size: 12px;
-}
-    .steps-data .full-deatils{
+
+  .right-fow .content h3 b {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+
+  .steps-data .full-deatils {
     padding: 30px 0px;
     padding-bottom: 0px;
   }
-  .full-deatils .info{
+
+  .full-deatils .info {
     margin: 10px 0px;
   }
-  .full-deatils p{
+
+  .full-deatils p {
     padding-bottom: 5px;
   }
-  .steps-data .full-deatils{
+
+  .steps-data .full-deatils {
     padding-top: 15px;
   }
-  
+
 }
 
 @media (max-width:768px) {
@@ -7286,10 +7336,13 @@ section.steps-data .main-title{
   .optum-rx-welcomeP {
     padding: 30px 0px;
   }
-  .right-fow .content p, .right-fow .content li{
+
+  .right-fow .content p,
+  .right-fow .content li {
     font-size: 15px;
   }
-  .right-fow h3{
+
+  .right-fow h3 {
     font-size: 20px;
     line-height: normal;
   }
@@ -7627,9 +7680,11 @@ section.steps-data .main-title{
   .col-10.mx-auto {
     width: 100%;
   }
-.right-fow .content p, .right-fow .content li{
-  font-size: 15px;
-}
+
+  .right-fow .content p,
+  .right-fow .content li {
+    font-size: 15px;
+  }
 }
 
 .portal-login::after {

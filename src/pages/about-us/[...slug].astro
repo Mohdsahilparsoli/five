@@ -3,77 +3,189 @@ import { fetchAPI } from "../../lib/wordpress";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 
-// SSR mode: koi bhi naya member WordPress mein add karo → page apne aap ban jaayega
-// (getStaticPaths ki zarurat nahi)
+// SSR mode
 const slug = (Astro.params.slug ?? "").split("/")[0];
 
-/* SINGLE MEMBER QUERY (variables = safe, no string injection) */
-const singleQuery = `query GetMember($slug: ID!) {
-  member(id: $slug, idType: SLUG) {
-    title
-    excerpt
-    slug
-    memberInfo{
-      profileImage {
+/* SINGLE MEMBER QUERY */
+const singleQuery = `
+  query GetMember($slug: ID!) {
+    member(id: $slug, idType: SLUG) {
+      title
+      slug
+      content
+      excerpt
+
+      memberCategories {
+        nodes {
+          name
+          slug
+        }
+      }
+
+      featuredImage {
         node {
-          id
           sourceUrl
+          altText
+          mediaDetails {
+            width
+            height
+          }
         }
       }
-     contactInfo
-    }
-    
-    content
-    memberCategories {
-      nodes {
-        name
-        slug
-      }
-    }
-    featuredImage {
-      node {
-        sourceUrl
-        mediaDetails {
-          width
-          height
-        }
+
+      teamProfile {
+        email
+        phone
+        subTitle
       }
     }
   }
-}`;
+`;
 
-const data = slug ? await fetchAPI(singleQuery, { slug }) : null;
+// Fetch member
+const data = slug
+  ? await fetchAPI(singleQuery, { slug })
+  : null;
+
 const member = data?.member;
-const profileImage = member?.memberInfo?.profileImage?.node?.sourceUrl;
 
-// Member na mile to 404 status (page crash nahi hoga)
-if (!member) Astro.response.status = 404;
+// 404
+if (!member) {
+  Astro.response.status = 404;
+}
+
+// Dynamic data
+const profileImage = member?.featuredImage?.node;
+
+const memberName = member?.title ?? "";
+
+const memberSubtitle =
+  member?.teamProfile?.subTitle?.trim() ?? "";
+
+const memberEmail =
+  member?.teamProfile?.email?.trim() ?? "";
+
+const memberPhone =
+  member?.teamProfile?.phone?.trim() ?? "";
 ---
 
-<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<BaseLayout
+  title={
+    memberName
+      ? `${memberName}${memberSubtitle ? ` | ${memberSubtitle}` : ""}`
+      : SITE_TITLE
+  }
+  description={SITE_DESCRIPTION}
+>
+
   <div class="single-team-mamber">
     <div class="container">
+
       <div class="main-conent">
+
+        <!-- ==============================
+             MEMBER IMAGE + CONTACT
+        =============================== -->
+
         <div class="team-img">
+
           <div class="img">
-            {profileImage && (
-            <img
-              src={profileImage}
-              alt="founder"
-            />
+            {profileImage?.sourceUrl && (
+              <img
+                src={profileImage.sourceUrl}
+                alt={
+                  profileImage?.altText ||
+                  memberName ||
+                  "Team Member"
+                }
+                width={profileImage?.mediaDetails?.width}
+                height={profileImage?.mediaDetails?.height}
+              />
             )}
           </div>
+
+
+          <!-- ==============================
+               CONTACT INFORMATION
+          =============================== -->
+
           <div class="contact-info-flow">
-            <div set:html={member?.memberInfo?.contactInfo ?? ""} />
+            <div>
+
+              <h3>Contact Information</h3>
+
+              <p>
+
+                {memberEmail && (
+                  <>
+                    <b>
+                      email:<br />
+                      <a href={`mailto:${memberEmail}`}>
+                        {memberEmail}
+                      </a>
+                    </b>
+
+                    <br />
+                  </>
+                )}
+
+                {memberPhone && (
+                  <b>
+                    phone:{" "}
+                    <a href={`tel:${memberPhone}`}>
+                      {memberPhone}
+                    </a>
+                  </b>
+                )}
+
+              </p>
+
+            </div>
           </div>
+
         </div>
+
+
+        <!-- ==============================
+             MEMBER CONTENT
+        =============================== -->
+
         <div class="team-content">
+
+          <!-- MAIN TITLE -->
+
+          {memberName && (
+            <h1>
+              {memberName}
+            </h1>
+          )}
+
+
+          <!-- SUB TITLE / DESIGNATION -->
+
+          {memberSubtitle && (
+            <h2>
+              {memberSubtitle}
+            </h2>
+          )}
+
+
+          <!-- WORDPRESS CONTENT -->
+
           <div set:html={member?.content ?? ""} />
-          <a href={`${Astro.url.origin}/management-team`}
-            >Back to Management Team</a
-          >
+
+
+          <!-- BACK BUTTON -->
+
+          <a href={`${Astro.url.origin}/about-us`}>
+            Back to Management Team
+          </a>
+
         </div>
+
       </div>
+
     </div>
   </div>
+
 </BaseLayout>
