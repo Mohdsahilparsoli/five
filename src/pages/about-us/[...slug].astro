@@ -49,9 +49,10 @@ const data = slug
 
 const member = data?.member;
 
-// 404
-if (!member) {
-  Astro.response.status = 404;
+// Member not found in WordPress → custom 404 page
+// (only when WordPress answered; if it's down we don't show a false 404)
+if (data && !member) {
+  return Astro.rewrite("/404/");
 }
 
 // Dynamic data

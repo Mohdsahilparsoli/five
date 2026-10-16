@@ -5,16 +5,18 @@ import { canonicalFor, cleanYoastHead } from "../lib/seo";
 
 interface Props {
   title?: string;
+  /** Hide from search engines (404 page) — no canonical either */
+  noindex?: boolean;
   description?: string;
   /** Raw <head> markup from Yoast SEO (WPGraphQL) */
   fullHeaddata?: string;
 }
 
-const { title, description, fullHeaddata } = Astro.props;
+const { title, description, fullHeaddata, noindex = false } = Astro.props;
 // Canonical uses the domain the page was opened on + the current path.
-const canonicalURL = canonicalFor(Astro.url);
+const canonicalURL = canonicalFor(Astro.request);
 const canonicalTag = `<link rel="canonical" href="${canonicalURL}" />`;
-const yoastHead = cleanYoastHead(fullHeaddata, Astro.url);
+const yoastHead = cleanYoastHead(fullHeaddata, Astro.request);
 const FONT_URL =
   "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800&display=swap";
 ---
@@ -23,7 +25,7 @@ const FONT_URL =
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{title || SITE_NAME}</title>
 {!yoastHead && description && <meta name="description" content={description} />}
-<Fragment set:html={canonicalTag} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <Fragment set:html={canonicalTag} />}
 
 {yoastHead && <Fragment set:html={yoastHead} />}
 

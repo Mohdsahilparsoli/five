@@ -11,27 +11,37 @@ export const SITE_ORIGIN = (
   "https://www.fivepointsbenefitplans.com"
 ).replace(/\/+$/, "");
 
-/** Origin (https://host) of the current request, e.g. Astro.url. */
-export function originOf(url) {
-  try {
-    const u = new URL(url);
-    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") return u.origin;
-    return `https://${u.host}`;
-  } catch {
-    return SITE_ORIGIN;
-  }
+const first = (v) => (v ?? "").split(",")[0].trim();
+const HOST_RE = /^[a-z0-9.-]+(?::\d+)?$/i;
+
+/**
+ * Origin of the live request, read from the headers Vercel (or any proxy)
+ * sends: "https://<the domain the visitor opened>".
+ * Astro.url can't be used for this — without `security.allowedDomains`
+ * Astro replaces the host with "localhost" on Vercel.
+ * @param {Request} request
+ */
+export function originOf(request) {
+  const headers = request?.headers;
+  const host = first(headers?.get("x-forwarded-host")) || first(headers?.get("host"));
+  if (!host || !HOST_RE.test(host)) return SITE_ORIGIN;
+
+  const isLocal = /^(localhost|127\.0\.0\.1)(:|$)/.test(host);
+  const proto = first(headers?.get("x-forwarded-proto")) || (isLocal ? "http" : "https");
+  return `${proto === "http" && isLocal ? "http" : "https"}://${host.toLowerCase()}`;
 }
 
 /**
- * Canonical URL on the domain the page was requested from.
- *   home   → "https://<host>"
- *   /about → "https://<host>/about/"
+ * Canonical URL on the domain the page was opened on.
+ *   home   → "https://<domain>"
+ *   /about → "https://<domain>/about/"
+ * @param {Request} request
  */
-export function canonicalFor(url) {
-  const origin = originOf(url);
+export function canonicalFor(request) {
+  const origin = originOf(request);
   let path = "/";
   try {
-    path = decodeURI(new URL(url).pathname);
+    path = decodeURI(new URL(request.url).pathname);
   } catch {}
   path = path.replace(/\/{2,}/g, "/").replace(/^\/+|\/+$/g, "");
   return path ? `${origin}/${encodeURI(path)}/` : origin;
@@ -61,9 +71,9 @@ const WP_URL_RE = new RegExp(
  *  - drop Yoast's canonical (we output our own),
  *  - point page URLs (og:url, JSON-LD @id/url, …) at the current domain.
  */
-export function cleanYoastHead(html, url) {
+export function cleanYoastHead(html, request) {
   if (!html || typeof html !== "string") return "";
-  const [scheme, host] = originOf(url).split("://");
+  const [scheme, host] = originOf(request).split("://");
   return html
     .replace(/<link\b[^>]*\brel=["']?canonical["']?[^>]*>\s*/gi, "")
     .replace(WP_URL_RE, (_m, slash) => `${scheme}:${slash}${slash}${host}`);

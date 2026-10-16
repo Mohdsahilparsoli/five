@@ -1,0 +1,77 @@
+---
+/**
+ * Custom 404 page — shown for any URL that doesn't exist.
+ * Links come from the WordPress main menu (first 4 top-level items),
+ * with a static fallback if WordPress is unreachable.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getLayoutData, toArray } from "../lib/wordpress";
+
+Astro.response.status = 404;
+
+const FALLBACK_LINKS = [
+  { label: "Home", uri: "/" },
+  { label: "Members", uri: "/members/" },
+  { label: "Employers", uri: "/employer-group-plans/" },
+  { label: "Contact Us", uri: "/contact-us/" },
+];
+
+const data = await getLayoutData();
+const menuLinks = toArray(data?.menu?.menuItems?.nodes)
+  .filter((item) => item && !item.parentId && item.label && item.uri)
+  .slice(0, 4)
+  .map(({ label, uri }) => ({ label, uri }));
+
+const links = menuLinks.length === 4 ? menuLinks : FALLBACK_LINKS;
+---
+
+<BaseLayout title="Page Not Found | Five Points Benefit Plans" noindex>
+  <section class="not-found">
+    <div class="container">
+      <p class="not-found__code">404</p>
+      <h1 class="not-found__title">Page not found</h1>
+      <p class="not-found__text">
+        The page you're looking for doesn't exist or may have moved.
+        Try one of these instead:
+      </p>
+
+      <nav class="not-found__links" aria-label="Helpful links">
+        {links.map((link) => (
+          <a href={link.uri} class="c-btn">{link.label}</a>
+        ))}
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding: 80px 0 100px;
+    text-align: center;
+  }
+  .not-found__code {
+    margin: 0;
+    font-size: clamp(72px, 14vw, 140px);
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(to right, #1f9d6b, #3f6fb4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .not-found__title {
+    margin: 16px 0 12px;
+    font-size: clamp(26px, 4vw, 38px);
+  }
+  .not-found__text {
+    max-width: 520px;
+    margin: 0 auto 32px;
+    color: #555;
+  }
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+</style>
