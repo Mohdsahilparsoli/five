@@ -11,10 +11,10 @@ interface Props {
 }
 
 const { title, description, fullHeaddata } = Astro.props;
-// Canonical is always on the main domain, built from the current path.
-const canonicalURL = canonicalFor(Astro.url.pathname);
+// Canonical uses the domain the page was opened on + the current path.
+const canonicalURL = canonicalFor(Astro.url);
 const canonicalTag = `<link rel="canonical" href="${canonicalURL}" />`;
-const yoastHead = cleanYoastHead(fullHeaddata);
+const yoastHead = cleanYoastHead(fullHeaddata, Astro.url);
 const FONT_URL =
   "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800&display=swap";
 ---
