@@ -47,7 +47,7 @@ npm run build
 | Name             | Purpose                                              |
 | ---------------- | ---------------------------------------------------- |
 | `WP_GRAPHQL_URL` | WPGraphQL endpoint (defaults to the test admin site) |
-| `SITE_URL`       | Public URL for canonical links                       |
+| `SITE_URL`       | Main domain for canonical URLs (default www.fivepointsbenefitplans.com) |
 | `SMTP_USER`      | Gmail address for OTP emails                         |
 | `SMTP_PASS`      | Gmail App Password                                   |
 | `OTP_SECRET`     | Random string used to sign OTP tokens                |
