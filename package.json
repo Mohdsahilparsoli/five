@@ -9,7 +9,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.15",
     "@astrojs/vercel": "^8.2.0",
     "astro": "^5.18.1",
     "nodemailer": "^8.0.4",

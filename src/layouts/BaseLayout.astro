@@ -3,30 +3,26 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
-const { title, fullHead } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  fullHead?: string;
+}
+
+const { title, description, fullHead } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} fullHeaddata={fullHead} />
-
-    
+    <BaseHead title={title} description={description} fullHeaddata={fullHead} />
   </head>
-
   <body>
     <Header />
-
     <main>
       <slot />
     </main>
-
     <Footer />
-
-    <!-- Global Scripts -->
-  
-    
-
     <slot name="scripts" />
   </body>
 </html>

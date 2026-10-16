@@ -2,9 +2,8 @@
 import { getLayoutData, toArray, getfootermenu } from "../lib/wordpress";
 import Googlereview from "./Googlereview.astro";
 
-/* Header ke saath shared data — koi extra API call nahi */
-const data = await getLayoutData();
-const footer = await getfootermenu();
+/* Shared with Header — no extra request */
+const [data, footer] = await Promise.all([getLayoutData(), getfootermenu()]);
 const items = toArray(data?.menu?.menuItems?.nodes).filter(Boolean);
 const footerWidget = data?.mainSidebar ?? "";
 

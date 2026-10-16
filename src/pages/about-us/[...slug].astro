@@ -1,7 +1,7 @@
 ---
 import { fetchAPI } from "../../lib/wordpress";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import { SITE_NAME, SITE_DESCRIPTION } from "../../consts";
 
 // SSR mode
 const slug = (Astro.params.slug ?? "").split("/")[0];
@@ -73,7 +73,7 @@ const memberPhone =
   title={
     memberName
       ? `${memberName}${memberSubtitle ? ` | ${memberSubtitle}` : ""}`
-      : SITE_TITLE
+      : SITE_NAME
   }
   description={SITE_DESCRIPTION}
 >

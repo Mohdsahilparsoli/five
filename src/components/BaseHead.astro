@@ -1,61 +1,32 @@
 ---
-// ✅ CSS (Astro handle karega – SAFE & OPTIMIZED)
 import "../styles/main.css";
-
-import type { ImageMetadata } from "astro";
-import { SITE_TITLE } from "../consts";
-import { SITE_NAME } from "../lib/wordpress";
+import { SITE_NAME } from "../consts";
 
 interface Props {
   title?: string;
+  description?: string;
+  /** Raw <head> markup from Yoast SEO (WPGraphQL) */
   fullHeaddata?: string;
-  image?: ImageMetadata;
 }
 
+const { title, description, fullHeaddata } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-const { title = SITE_NAME, fullHeaddata } = Astro.props;
+const FONT_URL =
+  "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800&display=swap";
 ---
 
-
-<!-- ✅ BASIC META -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-<!-- ✅ TITLE -->
 <title>{title || SITE_NAME}</title>
-
-<!-- ✅ CANONICAL -->
+{!fullHeaddata && description && <meta name="description" content={description} />}
 <link rel="canonical" href={canonicalURL} />
 
-<!-- ✅ YOAST SEO -->
 {fullHeaddata && <Fragment set:html={fullHeaddata} />}
 
-<!-- ✅ FAVICON -->
 <link rel="icon" href="/favicon.jpg" />
 
-<!-- ✅ RSS -->
-<link
-  rel="alternate"
-  type="application/rss+xml"
-  title={SITE_TITLE}
-  href={new URL("rss.xml", Astro.site)}
-/>
-
-
-<!-- 🔥 FONT OPTIMIZATION (NON-BLOCKING) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link
-  href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800&display=swap"
-  rel="preload"
-  as="style"
-  onload="this.rel='stylesheet'"
-/>
-
-
-<noscript>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800&display=swap" rel="stylesheet">
-</noscript>
-
+<!-- Fonts: non-blocking -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href={FONT_URL} rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link href={FONT_URL} rel="stylesheet" /></noscript>

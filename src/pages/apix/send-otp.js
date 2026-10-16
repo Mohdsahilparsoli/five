@@ -1,57 +1,13 @@
 export const prerender = false;
 
 import nodemailer from "nodemailer";
+import { createToken, generateOtp, json } from "../../lib/otp";
 
-const SMTP_USER = import.meta.env.SMTP_USER ?? process.env.SMTP_USER;
-const SMTP_PASS = import.meta.env.SMTP_PASS ?? process.env.SMTP_PASS;
+const SMTP_USER = import.meta.env.SMTP_USER || process.env.SMTP_USER;
+const SMTP_PASS = import.meta.env.SMTP_PASS || process.env.SMTP_PASS;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ✅ GLOBAL STORE (IMPORTANT FIX)
-globalThis.otpStore = globalThis.otpStore || new Map();
-
-export async function POST({ request }) {
-  let body;
-
-  try {
-    body = await request.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON body" }), { status: 400 });
-  }
-
-  const email = typeof body?.email === "string" ? body.email.trim() : "";
-
-  if (!email) {
-    return new Response(JSON.stringify({ error: "Email required" }), { status: 400 });
-  }
-
-  if (!SMTP_USER || !SMTP_PASS) {
-    console.error("SMTP_USER / SMTP_PASS env variables missing");
-    return new Response(JSON.stringify({ error: "Mail service not configured" }), { status: 500 });
-  }
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // ✅ SAVE IN GLOBAL
-  globalThis.otpStore.set(email, otp);
-
-  setTimeout(() => {
-    globalThis.otpStore.delete(email);
-  }, 5 * 60 * 1000);
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      // 🔐 Credentials ab Vercel Environment Variables se aate hain
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
-
-  try {
-  await transporter.sendMail({
-     from: `"Ogrelogic Support" <${SMTP_USER}>`,
-  to: email,
-  subject: "Your OTP Code – Valid for 5 Minutes",
-  html: `
+const emailHtml = (otp, year) => `
   <div style="font-family: Arial, sans-serif; background-color:#f4f6f8; padding:20px;">
     <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:10px; padding:30px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
       
@@ -91,16 +47,42 @@ export async function POST({ request }) {
       <hr style="margin:30px 0; border:none; border-top:1px solid #eee;" />
 
       <p style="font-size:13px; color:#aaa; text-align:center;">
-        © ${new Date().getFullYear()} Fivepointsbenefits. All rights reserved.
+        © ${year} Fivepointsbenefits. All rights reserved.
       </p>
     </div>
   </div>
-  `,
-  });
-  } catch (error) {
-    console.error("OTP mail failed:", error?.message ?? error);
-    return new Response(JSON.stringify({ error: "Failed to send OTP" }), { status: 500 });
+`;
+
+/** POST { email } → { success, token } — pass `token` to /apix/verify-otp */
+export async function POST({ request }) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ error: "Invalid JSON body" }, 400);
+
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  if (!EMAIL_RE.test(email)) return json({ error: "Valid email required" }, 400);
+
+  if (!SMTP_USER || !SMTP_PASS) {
+    console.error("[otp] SMTP_USER / SMTP_PASS env variables missing");
+    return json({ error: "Mail service not configured" }, 500);
   }
 
-  return new Response(JSON.stringify({ success: true }));
+  const otp = generateOtp();
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: `"Five Points Benefits" <${SMTP_USER}>`,
+      to: email,
+      subject: "Your OTP Code – Valid for 5 Minutes",
+      html: emailHtml(otp, new Date().getFullYear()),
+    });
+  } catch (error) {
+    console.error("[otp] Mail failed:", error?.message ?? error);
+    return json({ error: "Failed to send OTP" }, 500);
+  }
+
+  return json({ success: true, token: createToken(email, otp) });
 }

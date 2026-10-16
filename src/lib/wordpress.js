@@ -1,72 +1,85 @@
 /**
- * WordPress (WPGraphQL) data layer — SSR optimized
- * ------------------------------------------------
- * - Kabhi throw nahi karta: error / timeout / bad JSON par `null` return karta hai,
- *   isliye backend se data na aaye tab bhi site crash nahi hogi.
- * - Same request ke andar duplicate queries (Header + Footer + page) sirf EK baar
- *   network par jaati hain (in-flight de-duplication).
- * - Bahut chhota memory cache (default 5 sec) — WordPress mein change karte hi
- *   live site par turant dikh jaata hai (purana code data ko hamesha ke liye cache
- *   kar raha tha, isliye changes reflect nahi ho rahe the).
+ * WordPress (WPGraphQL) data layer.
+ *
+ * Guarantees:
+ *  - Never throws. On HTTP error, timeout or bad JSON it returns the last
+ *    successful response for the same query (if any), otherwise `null`.
+ *    Pages therefore always render, even when WordPress is down.
+ *  - Identical queries made while rendering one page (Header, Footer, page
+ *    body) share a single network request.
+ *  - Results are cached for only a few seconds, so edits in WordPress show up
+ *    on the live site almost immediately.
+ *  - Any failure during a request is recorded so the middleware can mark the
+ *    response `no-store`; the CDN never keeps a degraded page.
  */
+import { AsyncLocalStorage } from "node:async_hooks";
+import { SITE_NAME } from "../consts";
+
+export { SITE_NAME };
 
 const WP_GRAPHQL_URL =
   import.meta.env.WP_GRAPHQL_URL ||
-  (typeof process !== "undefined" ? process.env?.WP_GRAPHQL_URL : undefined) ||
+  process.env.WP_GRAPHQL_URL ||
   "https://test.admin.fivepointsbenefitplans.com/graphql";
 
-const CACHE_TTL_MS = 5_000; // chhota TTL = fresh content + fast repeat renders
-const TIMEOUT_MS = 8_000; // WP slow ho to function hang na ho
-const MAX_CACHE_ENTRIES = 100;
+const CACHE_TTL_MS = 5_000;
+const TIMEOUT_MS = 7_000;
+const MAX_ENTRIES = 200;
 
-/** @type {Map<string, { expires: number, promise: Promise<any> }>} */
+/** Short-lived cache of in-flight / recent requests. */
 const cache = new Map();
+/** Last successful payload per query — fallback when WordPress fails. */
+const lastGood = new Map();
+
+/** Per-request state, set by the middleware. */
+export const requestState = new AsyncLocalStorage();
+
+const markDegraded = () => {
+  const store = requestState.getStore();
+  if (store) store.degraded = true;
+};
+
+function remember(map, key, value) {
+  if (map.size >= MAX_ENTRIES) map.delete(map.keys().next().value);
+  map.set(key, value);
+}
 
 async function request(query, variables, attempt = 0) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(WP_GRAPHQL_URL, {
+    const res = await fetch(WP_GRAPHQL_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "User-Agent": "Mozilla/5.0 (Astro-SSR-Bot)",
+        "User-Agent": "Mozilla/5.0 (FivePoints-Astro-SSR)",
       },
       body: JSON.stringify({ query, variables }),
       signal: controller.signal,
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      // 5xx par ek baar retry
-      if (response.status >= 500 && attempt === 0) {
-        return request(query, variables, 1);
-      }
-      console.error(`[wordpress] HTTP ${response.status}`);
+    if (!res.ok) {
+      if (res.status >= 500 && attempt === 0) return request(query, variables, 1);
+      console.error(`[wordpress] HTTP ${res.status}`);
       return null;
     }
 
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.includes("application/json")) {
-      console.error("[wordpress] Non-JSON response from GraphQL endpoint");
+    if (!(res.headers.get("content-type") ?? "").includes("application/json")) {
+      console.error("[wordpress] Non-JSON response");
       return null;
     }
 
-    const json = await response.json();
-
-    // Partial data bhi use karo — ek field ka error poora page na tode
+    const json = await res.json();
     if (json?.errors?.length) {
-      console.error("[wordpress] GraphQL errors:", json.errors?.[0]?.message);
+      // Partial data is still used — one bad field must not break the page.
+      console.error("[wordpress] GraphQL error:", json.errors[0]?.message);
     }
-
     return json?.data ?? null;
   } catch (error) {
-    // Network glitch par ek baar retry (timeout par nahi)
-    if (attempt === 0 && error?.name !== "AbortError") {
-      return request(query, variables, 1);
-    }
+    if (attempt === 0 && error?.name !== "AbortError") return request(query, variables, 1);
     console.error("[wordpress] Fetch failed:", error?.message ?? error);
     return null;
   } finally {
@@ -75,35 +88,36 @@ async function request(query, variables, attempt = 0) {
 }
 
 /**
- * GraphQL query chalao. Hamesha object ya null return karega — kabhi throw nahi.
+ * Run a GraphQL query. Always resolves to an object or `null`; never throws.
  * @param {string} query
- * @param {Record<string, any>} [variables]
+ * @param {Record<string, unknown>} [variables]
  */
 export function fetchAPI(query, variables = {}) {
   const key = JSON.stringify([query, variables]);
   const now = Date.now();
-  const hit = cache.get(key);
+  let entry = cache.get(key);
 
-  if (hit && hit.expires > now) return hit.promise;
-
-  const promise = request(query, variables).then((data) => {
-    // Failed response cache mat karo — agli request dobara try karegi
-    if (data === null) cache.delete(key);
-    return data;
-  });
-
-  if (cache.size >= MAX_CACHE_ENTRIES) {
-    for (const [k, v] of cache) if (v.expires <= now) cache.delete(k);
-    if (cache.size >= MAX_CACHE_ENTRIES) cache.delete(cache.keys().next().value);
+  if (!entry || entry.expires <= now) {
+    const promise = request(query, variables).then((data) => {
+      if (data) {
+        remember(lastGood, key, data);
+        return { data, ok: true };
+      }
+      cache.delete(key); // don't cache failures; next request retries
+      return { data: lastGood.get(key) ?? null, ok: false };
+    });
+    entry = { expires: now + CACHE_TTL_MS, promise };
+    remember(cache, key, entry);
   }
 
-  cache.set(key, { expires: now + CACHE_TTL_MS, promise });
-  return promise;
+  return entry.promise.then(({ data, ok }) => {
+    if (!ok) markDegraded();
+    return data;
+  });
 }
 
 /* ==========================================================
-   SHARED QUERIES (Header + Footer ek hi query use karte hain
-   → ek hi network call)
+   SHARED QUERIES (Header + Footer share one request)
 ========================================================== */
 export const LAYOUT_QUERY = `
 query GetLayout {
@@ -146,7 +160,7 @@ export const FOOTER_MENU = `query GetFooterMenu {
       }
     }
   }
-}`
+}`;
 
 export const getfootermenu = () => fetchAPI(FOOTER_MENU);
 
@@ -215,10 +229,8 @@ query GetAllPlans {
    SAFE HELPERS
 ========================================================== */
 
-/** Hamesha array return karega (null / undefined / object → []) */
+/** Always returns an array (null / undefined / object → []). */
 export const toArray = (value) => (Array.isArray(value) ? value : []);
 
-/** Page title fallback chain */
-export const SITE_NAME = "Five Points Benefit Plans";
+/** Page title fallback chain. */
 export const pageTitle = (page) => page?.seo?.title || page?.title || SITE_NAME;
-

@@ -1,31 +1,18 @@
 export const prerender = false;
 
-// ✅ SAME GLOBAL STORE
-globalThis.otpStore = globalThis.otpStore || new Map();
+import { json, verifyToken } from "../../lib/otp";
 
+/** POST { email, otp, token } → { success } */
 export async function POST({ request }) {
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON body" }), { status: 400 });
-  }
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ error: "Invalid JSON body" }, 400);
 
-  const email = typeof body?.email === "string" ? body.email.trim() : "";
-  const otp = typeof body?.otp === "string" ? body.otp.trim() : String(body?.otp ?? "");
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  const otp = String(body.otp ?? "").trim();
 
-  const savedOtp = globalThis.otpStore.get(email);
+  const result = verifyToken(email, otp, body.token);
+  if (result === "expired") return json({ error: "OTP expired" }, 400);
+  if (result !== "ok") return json({ error: "Invalid OTP" }, 400);
 
-
-  if (!savedOtp) {
-    return new Response(JSON.stringify({ error: "OTP expired" }), { status: 400 });
-  }
-
-  if (savedOtp !== otp) {
-    return new Response(JSON.stringify({ error: "Invalid OTP" }), { status: 400 });
-  }
-
-  globalThis.otpStore.delete(email);
-
-  return new Response(JSON.stringify({ success: true, message: "OTP verified" }));
+  return json({ success: true, message: "OTP verified" });
 }

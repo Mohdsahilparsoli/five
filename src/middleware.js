@@ -1,50 +1,58 @@
 import { defineMiddleware } from "astro:middleware";
-import { getLayoutData } from "./lib/wordpress";
+import { getLayoutData, getfootermenu, requestState } from "./lib/wordpress";
 
 /**
- * CDN cache strategy (Vercel Edge):
- *  - s-maxage=1              → Vercel CDN response ko sirf 1 sec fresh maanta hai
- *  - stale-while-revalidate  → visitor ko turant cached page milta hai (fast),
- *                              aur background mein naya page WordPress se ban jaata hai
- * Result: WordPress mein update karte hi agle 1-2 page loads mein live site update.
+ * CDN caching for HTML (Vercel Edge):
+ *  - s-maxage=1               → the CDN treats a page as fresh for 1 second.
+ *  - stale-while-revalidate   → visitors get the cached page instantly while a
+ *                               fresh copy is rendered from WordPress in the
+ *                               background.
+ * Result: fast pages, few function invocations (free-plan friendly), and
+ * WordPress edits appear on the next page load or two.
+ *
+ * If any WordPress request failed while rendering, the page is sent with
+ * `no-store` so a broken/partial page is never cached.
  */
-const HTML_CACHE_CONTROL =
-  "public, max-age=0, s-maxage=1, stale-while-revalidate=300";
+const HTML_CACHE = "public, max-age=0, s-maxage=1, stale-while-revalidate=300";
+const NO_STORE = "no-store, max-age=0";
+
+const isPageRequest = ({ request, url }) =>
+  (request.method === "GET" || request.method === "HEAD") &&
+  !url.pathname.startsWith("/api") &&
+  !url.pathname.startsWith("/_") && // /_astro, /_image, /_server-islands
+  !url.pathname.includes(".");
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const { request, url } = context;
-  const method = request.method;
-  const isPageRequest =
-    (method === "GET" || method === "HEAD") &&
-    !url.pathname.startsWith("/api") &&
-    !url.pathname.startsWith("/_") && // /_astro, /_image, /_server-islands
-    !url.pathname.includes(".");
+  if (!isPageRequest(context)) return next();
 
-  if (!isPageRequest) {
-    return next();
-  }
+  const { url } = context;
 
-  // trailing slash logic (pehle jaisa hi)
+  // Canonical trailing slash
   if (!url.pathname.endsWith("/")) {
-    const target = new URL(url);
-    target.pathname += "/";
-    return context.redirect(target.pathname + target.search, 301);
+    return context.redirect(`${url.pathname}/${url.search}`, 301);
   }
 
-  // 🚀 Header/Footer ka data page query ke saath PARALLEL mein fetch shuru
-  // (await nahi kiya — Header/Footer isi promise ko reuse karenge)
-  getLayoutData();
+  const state = { degraded: false };
 
-  const response = await next();
+  return requestState.run(state, async () => {
+    // Start Header/Footer data in parallel with the page's own queries.
+    const layout = Promise.all([getLayoutData(), getfootermenu()]);
+    const response = await next();
+    await layout;
 
-  try {
-    const type = response.headers.get("content-type") ?? "";
-    if (type.includes("text/html") && !response.headers.has("Cache-Control")) {
-      response.headers.set("Cache-Control", HTML_CACHE_CONTROL);
+    try {
+      const type = response.headers.get("content-type") ?? "";
+      if (type.includes("text/html")) {
+        if (state.degraded || response.status >= 500) {
+          response.headers.set("Cache-Control", NO_STORE);
+        } else if (!response.headers.has("Cache-Control")) {
+          response.headers.set("Cache-Control", HTML_CACHE);
+        }
+      }
+    } catch {
+      // Immutable headers — leave as is.
     }
-  } catch {
-    // immutable headers — ignore
-  }
 
-  return response;
+    return response;
+  });
 });
