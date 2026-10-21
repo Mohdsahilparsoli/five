@@ -11,24 +11,50 @@ export const SITE_ORIGIN = (
   "https://www.fivepointsbenefitplans.com"
 ).replace(/\/+$/, "");
 
-const first = (v) => (v ?? "").split(",")[0].trim();
+const first = (v) => (v ?? "").split(",")[0].trim().toLowerCase();
 const HOST_RE = /^[a-z0-9.-]+(?::\d+)?$/i;
+const LOCAL_RE = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/;
+const isPublicHost = (h) => !!h && HOST_RE.test(h) && !LOCAL_RE.test(h);
+const env = (key) => (typeof process !== "undefined" ? process.env?.[key] : undefined);
 
 /**
- * Origin of the live request, read from the headers Vercel (or any proxy)
- * sends: "https://<the domain the visitor opened>".
- * Astro.url can't be used for this — without `security.allowedDomains`
- * Astro replaces the host with "localhost" on Vercel.
+ * Origin of the live request: "https://<the domain the visitor opened>".
+ *
+ * Checked in order, first public (non-localhost) host wins:
+ *   1. x-forwarded-host  (set by Vercel / any proxy)
+ *   2. host header
+ *   3. the request URL's host
+ *   4. Vercel's own production domain (VERCEL_PROJECT_PRODUCTION_URL —
+ *      your custom domain if one is attached, else *.vercel.app)
+ *   5. VERCEL_URL (this deployment's URL)
+ * Only when running locally (npm run dev) can it be http://localhost.
  * @param {Request} request
  */
 export function originOf(request) {
   const headers = request?.headers;
-  const host = first(headers?.get("x-forwarded-host")) || first(headers?.get("host"));
-  if (!host || !HOST_RE.test(host)) return SITE_ORIGIN;
+  let urlHost = "";
+  try {
+    urlHost = new URL(request?.url).host.toLowerCase();
+  } catch {}
 
-  const isLocal = /^(localhost|127\.0\.0\.1)(:|$)/.test(host);
-  const proto = first(headers?.get("x-forwarded-proto")) || (isLocal ? "http" : "https");
-  return `${proto === "http" && isLocal ? "http" : "https"}://${host.toLowerCase()}`;
+  const candidates = [
+    first(headers?.get?.("x-forwarded-host")),
+    first(headers?.get?.("host")),
+    urlHost,
+  ];
+  const host = candidates.find(isPublicHost);
+  if (host) return `https://${host}`;
+
+  const vercelHost = [env("VERCEL_PROJECT_PRODUCTION_URL"), env("VERCEL_URL")]
+    .map((h) => first(h).replace(/^https?:\/\//, "").replace(/\/.*$/, ""))
+    .find(isPublicHost);
+  if (vercelHost) return `https://${vercelHost}`;
+
+  // Local development only
+  const local = candidates.find((h) => h && LOCAL_RE.test(h));
+  if (local && !env("VERCEL")) return `http://${local}`;
+
+  return SITE_ORIGIN;
 }
 
 /**
@@ -69,12 +95,17 @@ const WP_URL_RE = new RegExp(
 /**
  * Clean Yoast fullHead:
  *  - drop Yoast's canonical (we output our own),
- *  - point page URLs (og:url, JSON-LD @id/url, …) at the current domain.
+ *  - point page URLs (og:url, JSON-LD @id/url, …) at the current domain,
+ *    including any localhost URLs WordPress might output.
  */
+// Matches http(s)://localhost[:port] (plain or JSON-escaped)
+const LOCAL_URL_RE = /https?:(\\?\/)\1(?:localhost|127\.0\.0\.1)(?::\d+)?/gi;
+
 export function cleanYoastHead(html, request) {
   if (!html || typeof html !== "string") return "";
   const [scheme, host] = originOf(request).split("://");
   return html
     .replace(/<link\b[^>]*\brel=["']?canonical["']?[^>]*>\s*/gi, "")
-    .replace(WP_URL_RE, (_m, slash) => `${scheme}:${slash}${slash}${host}`);
+    .replace(WP_URL_RE, (_m, slash) => `${scheme}:${slash}${slash}${host}`)
+    .replace(LOCAL_URL_RE, (_m, slash) => `${scheme}:${slash}${slash}${host}`);
 }

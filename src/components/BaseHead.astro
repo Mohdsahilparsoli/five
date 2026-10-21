@@ -23,7 +23,7 @@ const FONT_URL =
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>{title || SITE_NAME}</title>
+{!/<title[\s>]/i.test(yoastHead) && <title>{title || SITE_NAME}</title>}
 {!yoastHead && description && <meta name="description" content={description} />}
 {noindex ? <meta name="robots" content="noindex, follow" /> : <Fragment set:html={canonicalTag} />}
 
