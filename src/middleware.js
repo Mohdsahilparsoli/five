@@ -27,23 +27,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const { url } = context;
 
-  // Unknown URL → Astro renders the custom 404 page. Don't redirect it:
-  // Vercel forces status 404 on unmatched routes, which would turn the
-  // redirect into an empty 404 (browser's default "page can't be found").
-  const isNotFound = context.routePattern === "/404";
-
-  // Canonical trailing slash (only for real pages)
-  if (!isNotFound && !url.pathname.endsWith("/")) {
-    return context.redirect(`${url.pathname}/${url.search}`, 301);
-  }
-
   const state = { degraded: false };
+  const missingSlash = !url.pathname.endsWith("/");
 
   return requestState.run(state, async () => {
     // Start Header/Footer data in parallel with the page's own queries.
     const layout = Promise.all([getLayoutData(), getfootermenu()]);
     const response = await next();
     await layout;
+
+    // Canonical trailing slash — but only for pages that exist.
+    // Unknown URLs keep their custom 404 page (a redirect there would be
+    // turned into an empty 404 by Vercel's catch-all route).
+    if (missingSlash && response.status !== 404) {
+      return context.redirect(`${url.pathname}/${url.search}`, 301);
+    }
 
     try {
       const type = response.headers.get("content-type") ?? "";
